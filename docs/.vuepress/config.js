@@ -1,28 +1,27 @@
 module.exports = {
-  title: 'Hello VuePress',
-  description: 'Just playing around',
+  title: '前端学习路线',
+  description: '持续学习，不断学习',
   head: [['link', { rel: 'icon', href: '/logo.png' }]],
   themeConfig: {
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Guide', link: '/guide/' },
-      { text: 'External', link: 'https://google.com' }
+      { text: '首页', link: '/' },
+      { text: '导航', link: '/guide/' },
+      { text: 'GitHub', link: 'https://github.com/ni5328109/web-road-map' }
     ],
     sidebar: [
-        {
-          title: 'Group 1',   // 必要的
-          path: '/guide/',      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
-          collapsable: false, // 可选的, 默认值是 true,
-          sidebarDepth: 1,    // 可选的, 默认值是 1
-          children: [
-            '/'
-          ]
-        },
-        {
-          title: 'Group 2',
-          children: [],
-          initialOpenGroupIndex: -1 // 可选的, 默认值是 0
-        }
-      ]
+      {
+        title: '前言',
+        sidebarDepth: 0,
+        collapsable: false,
+        children: ['/guide/']
+      },
+      {
+        title: '前端入门',
+        collapsable: false,
+        children: ['/primary/html', '/primary/css', '/primary/js']
+      }
+    ],
+    sidebarDepth: 3,
+    smoothScroll: true
   }
 }

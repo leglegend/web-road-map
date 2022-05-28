@@ -1,6 +1,5 @@
 ---
 home: true
-heroImage: /hero.png
 heroText: 前端学习路线
 tagline: 持续学习，不断学习
 actionText: 立即开始 →
