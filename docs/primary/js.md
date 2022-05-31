@@ -1,1 +1,11 @@
 # JavaScript
+## 基本语法
+## DOM
+## 数据类型
+## Ajax/Fetch请求
+## ES6新特性
+## 面试重点
+### 原型链和原型对象
+### let、count、var的区别
+### 手写Promise
+### 防抖和节流
