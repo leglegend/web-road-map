@@ -19,9 +19,13 @@ module.exports = {
         },
         {
           title: '前端入门',
-          path: '/primary/',
+          path: '/guide/primary/',
           collapsable: false,
-          children: ['/primary/html', '/primary/css', '/primary/js']
+          children: [
+            '/guide/primary/html',
+            '/guide/primary/css',
+            '/guide/primary/js'
+          ]
         }
       ],
       '/node/': [
