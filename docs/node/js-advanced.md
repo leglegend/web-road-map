@@ -78,7 +78,7 @@ NaN表示Not a Number，即非数字。设计到NaN的所有操作都会返回Na
 几乎所有值都可用toString()转换为字符串。</br>
 ### Symbol
 就是说Symbol()函数可以给一个不重复的初始值，我把它当成不显示具体值的uuid。</br>
-## 四、语句
+### 语句
 - if语句
 - do...while语句
 - while语句
@@ -90,7 +90,7 @@ NaN表示Not a Number，即非数字。设计到NaN的所有操作都会返回Na
 - with语句(不推荐使用)
 - switch语句
 
-## 五、变量、作用域、内存
+## 四、变量、作用域、内存
 ### 原始值和引用值
 原始值就是我们上面提到的六种原始数据类型或称基本数据类型定义的变量的值。原始值和引用值的区别在于：**保存原始值的变量是按值访问的，而保存引用值的变量是按引用访问的，即该值指向的是一个地址**。引用值都是对象，所以通过`typeof`运算符判断变量的类型返回的都是`object`。如果要判断某个引用值变量是通过哪个函数构建的，需要用`instanceof`运算符判断。
 原始值变量赋值给别的变量会生成原始值的副本，而引用值变量赋值给其他变量只会复制指针，所以两个变量指向同一个Object。
@@ -112,7 +112,7 @@ var是函数作用域，let和const是块级作用域，var声明的变量在整
 - 内存泄漏：全局变量泄露(声明变量没使用任何关键字)，定时器不用后没有销毁，函数中返回闭包导致函数执行完后没有被销毁，应避免上述操作。
 - 静态分配对象池：先创建一个对象池，防止频繁新建销毁对象触发更多的垃圾回收
 
-## 六、基本引用类型
+## 五、基本引用类型
 **对象是某个引用类型的`实例`，通过`new`加一个构造函数创建。**
 ```javascript
 let date = new Date()
@@ -131,6 +131,153 @@ strObj instanceof String // true
 - concat:：拼接字符串
 - slice、subString：分割字符串，传入起始位置和结束位置
 - subStr：分割字符串，传入起始位置和字符个数
-- indexOf： 
-  
+- indexOf： 从头查找，返回第一个匹配的位置
+- lastIndexOf：从尾查找，返回第一个匹配的位置
+- startsWith：是否开始于
+- endsWith：是否结束于
+- includes：是否包含
+- trim、trimLeft、trimRight：去除空格
+- repeat：重复
+- toLowerCase：转换为小写
+- toUpperCase：转换为大写
+- replace：替换
 
+#### Number
+- toFixed：返回包含指定小数点位数的数值字符串
+- toExponential：返回以科学记数法（也称为指数记数法）表示的数值字符串
+  
+### 单例内置对象
+内置对象，或称全局对象(MDN这么称呼的)。要区分内置对象和单例内置对象，Object、Array、String、Date不仅是内置对象，还是引用类型，是可以通过new指令创建实例的。而单例内置对象就真的只是一个对象，可以把他理解为全局唯一的，并且身上挂着很多方法的一个对象，比如说Math，通过console.log输出其实就是这样的：
+```javascript
+{
+    abs:f(),
+    cos:f(),
+    max:f(),
+    min:f(),
+    ...
+}
+```
+所以我们这节只需要知道这几个对象，然后明白其中关键几个用法就可以了。
+#### Global
+globalThis是ES11(ES2020)新加入的全局对象，之前代码并不能够显式的访问到它。我们平时常用的isNaN()、isFinite()、parseInt()和parseFloat()，实际上都是Global对象的方法。
+除了这些，还有一些实用的方法：
+```javascript
+encodeURIComponent：编码
+decodeURIComponent：解码
+eval：解释器
+```
+#### Math
+Math上有很多非常实用的方法，能够执行复杂的数学计算：
+```javascript
+min：返回最小值
+max：返回最大值
+ceil：向上取整
+floor：向下取整
+round：四舍五入
+random：随机数
+abs：绝对值
+```
+
+## 六、集合引用类型
+这章的主要内容是Array、Map、Set。
+### Array
+数组，一组有序的数据，JS的数组不同于其他语言，数组中每个元素可以不是同类型数据。
+#### 创建数组
+有下面几种方式：
+```javascript
+let array = [1,2,3] // 字面量方式创建
+let array = new Array(1,2,3) // 通过Array构造函数创建
+let array = Array(1,2,3)
+```
+这上面几种方式得到的结果完全一致。
+```javascript
+let array = new Array(1,2,3) // [1,2,3]
+let array = new Array(123) // 长度为123的数组
+```
+Array构造函数还有两个ES6新增的用于创建数组的静态方法：from()和of()。from()用于将类数组结构转换为数组实例，而of()用于将一组参数转换为数组实例。
+```javascript
+let array = Array.from(1,2,3) // [1,2,3]
+let array = Array.from('123') // ['1','2','3']
+```
+#### 数组空位
+```javascript
+let array = [,] // [null,null]
+array[0] // undefined
+```
+#### 迭代器方法
+```javascript
+let a = ['red','yellow']
+a.keys() // 0,1
+a.values() // 'red','yellow'
+a.entries() // [0,'red'],[1,'yellow']
+```
+#### 赋值填充方法
+- fill：三个参数，填充值，填充开始索引，填充结束索引
+- copyWithin：三个参数，插入位置，复制开始位置，复制结束位置
+
+#### 栈、队列方法
+- push：最后插入
+- pop：最后弹出
+- shift：最前弹出
+- unshift：最前插入
+
+#### 排序方法
+reverse()可用来反向排列数组，如果想按条件排序，可使用sort()。
+sort()默认从小到大排序，也可以接受一个比较函数，比较函数接收两个参数，在函数中判断哪个参数排在前面。
+``` javascript
+array.sort((a,b)=>{
+  return 1 // a排在b后面
+  return -1 // a排在b前面
+  return 0 // a和b相等
+})
+
+```
+
+#### 操作方法
+- concat：在数组末尾添加元素
+- slice：两个参数，起止位置索引，在本身数组基础上创建一个新数组，不会改变原数组
+- splice：三个参数，索引位置，删除元素数量，新插入的元素，返回被删除的元素
+
+#### 搜索和位置方法
+- indexOf
+- lastIndexOf
+- includes
+- find 返回元素
+- findIndex 返回元素索引
+#### 迭代方法
+- every 都返回true则返回true
+- some 有一个返回true则返回true
+- forEach 不返回任何值
+- map 返回的值构成一个新数组
+- filter 返回的true的元素构成一个新数组
+
+#### 归并方法
+reduce()和reduceRight()。
+
+### 定型数组
+没搞定
+
+### Map
+通过key/value存储的集合。
+```javascript
+const map = new Map()
+map.set('key','value')
+map.get('key')
+map.size
+map.has('key')
+map.delete('key')
+map.set('key1','value1').set('key2','value2')
+map.clear()
+```
+#### 迭代
+可通过for of语句迭代，也可通过keys()、values()、entries()。
+#### Object和Map
+内存占用：同样内存，Map多存储50%
+插入性能：量大的情况，Map更好
+查找速度：Object更快
+删除性能：Map完胜
+#### WeakMap
+key只能是Object，key消失则对应值被回收，不可迭代。
+
+### Set
+拥有一系列唯一值的集合。
