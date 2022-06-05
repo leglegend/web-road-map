@@ -281,3 +281,83 @@ key只能是Object，key消失则对应值被回收，不可迭代。
 
 ### Set
 拥有一系列唯一值的集合。
+```javascript
+const set = new Set()
+set.add('value')
+set.has('value')
+set.size
+set.delete('value')
+set.add('value1').add('value2')
+set.clear()
+```
+#### 迭代
+Set会维护值插入时的顺序，可通过keys()、values()、entries()迭代。
+
+### WeakSet
+值只能是Object，值消失则对应值被回收，不可迭代。
+
+## 七、迭代器与生成器
+迭代需要在一个有序集合上进行，循环是一种最简单的迭代，但是需要提前知道起始点和长度。
+### 迭代器模式
+我们把实现了Iterable接口的对象称为可迭代对象，他们可通过Iterator(迭代器)消费。
+检查一个对象是否可以通过迭代器迭代，可通过下面的方法：
+```javascript
+let num = 1
+console.log(num[Symbol.iterator]) // undefined
+
+let arr = [1,2,3]
+console.log(arr[Symbol.iterator]) // function values() { [native code] }
+```
+迭代器通过`next()`方法遍历数据，next方法返回量个属性，done和value。
+每个迭代器都能完成一次完整迭代，互相之间没有联系。
+### 自定义迭代器
+通过实现[Symbol.iterator]()方法来创建自定义迭代器。
+``` javascript
+class Foo {
+    [Symbol.iterator]() {
+        return {
+            next() {
+                return { done: true }
+            }
+        }
+    }
+}
+
+let foo = new Foo()
+console.log(foo[Symbol.iterator]().next()) // {done:true}
+```
+### 提前中止迭代器
+return()方法，对于for...of，可用break、continue、return或throw提前退出。
+
+## 生成器
+生成器拥有在一个函数块内暂停和恢复代码执行的能力。生成器是一个函数，在函数名称前加一个*号表示它是一个生成器。
+::: tip 注意
+箭头函数不能用来定义生成器函数。
+:::
+调用生成器函数会生成一个生成器对象，next()方法可以执行生成器。
+### 通过yield中断执行
+没有yield的生成器，调用一次next()就会返回{done:true}，函数体中遇到yield，生成器会停止，知道下次调用next()。
+yield可以返回值，通过yield返回的值，done为false，通过return返回的值，done为true。
+生成器也是一种可迭代对象。
+yield还可以当作中间参数使用，通过next()传递的值能通过yield接收。
+```javascript
+function *foo(t) {
+    console.log(t)
+    let a = yield t
+    console.log(a)
+    return t
+}
+
+let a = foo(1)
+console.log(a.next(2))
+console.log(a.next(3))
+// 1
+// {"value":1,"done":false}
+// 3
+// {"value":1,"done":true}
+```
+上面的2没有输出，是因为第一次调用next传入的值是初始化foo是传入的值。
+yield * [1,2,3]可以迭代三次。
+
+## 八、对象、类与面向对象编程
+
