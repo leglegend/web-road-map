@@ -71,14 +71,14 @@ Number数据类型可以表示数值，包括整数和浮点数。浮点数这�
 Number不可是无限大的，可以用Infinity表示无限大，-Infinity表示无限小。</br>
 #### NaN
 NaN表示Not a Number，即非数字。设计到NaN的所有操作都会返回NaN，可以通过isNaN()函数判断某个变量或表达式是否是NaN。
-### 数值转换
+#### 数值转换
 可以用Number()，parseInt()和parseFloat()函数转换为整数和浮点数，具体细节不说了，整数最好用parseInt()，浮点数用parseFloat()。</br>
 ### String
 字符串类型，可用单引号、双引号、反引号标示。</br>
 几乎所有值都可用toString()转换为字符串。</br>
 ### Symbol
 就是说Symbol()函数可以给一个不重复的初始值，我把它当成不显示具体值的uuid。</br>
-## 四、语句
+### 语句
 - if语句
 - do...while语句
 - while语句
@@ -89,4 +89,275 @@ NaN表示Not a Number，即非数字。设计到NaN的所有操作都会返回Na
 - break和continue语句
 - with语句(不推荐使用)
 - switch语句
-- 
+
+## 四、变量、作用域、内存
+### 原始值和引用值
+原始值就是我们上面提到的六种原始数据类型或称基本数据类型定义的变量的值。原始值和引用值的区别在于：**保存原始值的变量是按值访问的，而保存引用值的变量是按引用访问的，即该值指向的是一个地址**。引用值都是对象，所以通过`typeof`运算符判断变量的类型返回的都是`object`。如果要判断某个引用值变量是通过哪个函数构建的，需要用`instanceof`运算符判断。
+原始值变量赋值给别的变量会生成原始值的副本，而引用值变量赋值给其他变量只会复制指针，所以两个变量指向同一个Object。
+### 作用域
+JavaScript中存在三个作用域：**全局作用域、函数级作用域、块级作用域**。每一个作用域都有一个与其关联的变量对象，这些变量对象之间的关系称为作用域链，它决定了各个作用域执行的顺序，当前作用域可以访问到其上级作用域的方法和变量。<br/>
+var是函数作用域，let和const是块级作用域，var声明的变量在整个函数中都可使用，而let和const声明的变量只在其声明的花括号{}内有效。
+### 垃圾回收
+浏览器回收内存有两种方式，标记清理和引用计数。
+#### 标记清理
+变量进入执行上下文时会被标记一个声明，变量离开上下文时则打上离开的标记，浏览器会定时回收被打赏离开标记的变量。
+#### 引用计数
+记录变量被引用的次数，被赋值+1，取消赋值或被覆盖则-1，成0的变量就是可清理变量。不过这种方式有很多问题，例如循环引用，A引用了B，B引用了A，就算AB都离开执行上下文，因为互相引用，也不会被清理，这种方式已经被弃用了。
+#### 性能
+垃圾回收会影响浏览器性能，所以尽可能减少垃圾回收程序执行的频率。以下列举几个提高性能的点：
+- 声明：多用const，少用let，不用var
+- 隐藏类：如果两个变量同属一个引用类型(或者说类)，引擎会通过隐藏类将创建的对象关联起来，提高性能，但要注意，如果给其中一个变量声明了不同的属性，则两个变量对应不同的隐藏类。（可能这也是使用TS的一个原因吧）
+- 删除属性：不要用delete，变量赋值为null可以不改变隐藏类的关联关系。
+- 垃圾回收：降低新建删除对象的频率，可以更改对象的值而不是重新赋值成一个新的对象。
+- 内存泄漏：全局变量泄露(声明变量没使用任何关键字)，定时器不用后没有销毁，函数中返回闭包导致函数执行完后没有被销毁，应避免上述操作。
+- 静态分配对象池：先创建一个对象池，防止频繁新建销毁对象触发更多的垃圾回收
+
+## 五、基本引用类型
+**对象是某个引用类型的`实例`，通过`new`加一个构造函数创建。**
+```javascript
+let date = new Date()
+```
+ECMAScript提供了很多原生引用类型供开发者使用：Date，String，Number，Boolean，RegExp。其中，我们把String、Number和Boolean称作原始值包装类型。
+直接赋值给变量原始值和通过原始值包装类型给变量赋值不完全相同：
+```javascript
+let str = 'hello world' // typeof str 'string'
+let strObj = new String('hello world') // typeof strObj 'object'
+str instanceof String // false
+strObj instanceof String // true
+```
+其他原始值包装类型情况和String类似。
+### 一些需要记住的基本引用类型的方法
+#### String
+- concat:：拼接字符串
+- slice、subString：分割字符串，传入起始位置和结束位置
+- subStr：分割字符串，传入起始位置和字符个数
+- indexOf： 从头查找，返回第一个匹配的位置
+- lastIndexOf：从尾查找，返回第一个匹配的位置
+- startsWith：是否开始于
+- endsWith：是否结束于
+- includes：是否包含
+- trim、trimLeft、trimRight：去除空格
+- repeat：重复
+- toLowerCase：转换为小写
+- toUpperCase：转换为大写
+- replace：替换
+
+#### Number
+- toFixed：返回包含指定小数点位数的数值字符串
+- toExponential：返回以科学记数法（也称为指数记数法）表示的数值字符串
+  
+### 单例内置对象
+内置对象，或称全局对象(MDN这么称呼的)。要区分内置对象和单例内置对象，Object、Array、String、Date不仅是内置对象，还是引用类型，是可以通过new指令创建实例的。而单例内置对象就真的只是一个对象，可以把他理解为全局唯一的，并且身上挂着很多方法的一个对象，比如说Math，通过console.log输出其实就是这样的：
+```javascript
+{
+    abs:f(),
+    cos:f(),
+    max:f(),
+    min:f(),
+    ...
+}
+```
+所以我们这节只需要知道这几个对象，然后明白其中关键几个用法就可以了。
+#### Global
+globalThis是ES11(ES2020)新加入的全局对象，之前代码并不能够显式的访问到它。我们平时常用的isNaN()、isFinite()、parseInt()和parseFloat()，实际上都是Global对象的方法。
+除了这些，还有一些实用的方法：
+```javascript
+encodeURIComponent：编码
+decodeURIComponent：解码
+eval：解释器
+```
+#### Math
+Math上有很多非常实用的方法，能够执行复杂的数学计算：
+```javascript
+min：返回最小值
+max：返回最大值
+ceil：向上取整
+floor：向下取整
+round：四舍五入
+random：随机数
+abs：绝对值
+```
+
+## 六、集合引用类型
+这章的主要内容是Array、Map、Set。
+### Array
+数组，一组有序的数据，JS的数组不同于其他语言，数组中每个元素可以不是同类型数据。
+#### 创建数组
+有下面几种方式：
+```javascript
+let array = [1,2,3] // 字面量方式创建
+let array = new Array(1,2,3) // 通过Array构造函数创建
+let array = Array(1,2,3)
+```
+这上面几种方式得到的结果完全一致。
+```javascript
+let array = new Array(1,2,3) // [1,2,3]
+let array = new Array(123) // 长度为123的数组
+```
+Array构造函数还有两个ES6新增的用于创建数组的静态方法：from()和of()。from()用于将类数组结构转换为数组实例，而of()用于将一组参数转换为数组实例。
+```javascript
+let array = Array.from(1,2,3) // [1,2,3]
+let array = Array.from('123') // ['1','2','3']
+```
+#### 数组空位
+```javascript
+let array = [,] // [null,null]
+array[0] // undefined
+```
+#### 迭代器方法
+```javascript
+let a = ['red','yellow']
+a.keys() // 0,1
+a.values() // 'red','yellow'
+a.entries() // [0,'red'],[1,'yellow']
+```
+#### 赋值填充方法
+- fill：三个参数，填充值，填充开始索引，填充结束索引
+- copyWithin：三个参数，插入位置，复制开始位置，复制结束位置
+
+#### 栈、队列方法
+- push：最后插入
+- pop：最后弹出
+- shift：最前弹出
+- unshift：最前插入
+
+#### 排序方法
+reverse()可用来反向排列数组，如果想按条件排序，可使用sort()。
+sort()默认从小到大排序，也可以接受一个比较函数，比较函数接收两个参数，在函数中判断哪个参数排在前面。
+``` javascript
+array.sort((a,b)=>{
+  return 1 // a排在b后面
+  return -1 // a排在b前面
+  return 0 // a和b相等
+})
+
+```
+
+#### 操作方法
+- concat：在数组末尾添加元素
+- slice：两个参数，起止位置索引，在本身数组基础上创建一个新数组，不会改变原数组
+- splice：三个参数，索引位置，删除元素数量，新插入的元素，返回被删除的元素
+
+#### 搜索和位置方法
+- indexOf
+- lastIndexOf
+- includes
+- find 返回元素
+- findIndex 返回元素索引
+#### 迭代方法
+- every 都返回true则返回true
+- some 有一个返回true则返回true
+- forEach 不返回任何值
+- map 返回的值构成一个新数组
+- filter 返回的true的元素构成一个新数组
+
+#### 归并方法
+reduce()和reduceRight()。
+
+### 定型数组
+没搞定
+
+### Map
+通过key/value存储的集合。
+```javascript
+const map = new Map()
+map.set('key','value')
+map.get('key')
+map.size
+map.has('key')
+map.delete('key')
+map.set('key1','value1').set('key2','value2')
+map.clear()
+```
+#### 迭代
+可通过for of语句迭代，也可通过keys()、values()、entries()。
+#### Object和Map
+内存占用：同样内存，Map多存储50%
+插入性能：量大的情况，Map更好
+查找速度：Object更快
+删除性能：Map完胜
+#### WeakMap
+key只能是Object，key消失则对应值被回收，不可迭代。
+
+### Set
+拥有一系列唯一值的集合。
+```javascript
+const set = new Set()
+set.add('value')
+set.has('value')
+set.size
+set.delete('value')
+set.add('value1').add('value2')
+set.clear()
+```
+#### 迭代
+Set会维护值插入时的顺序，可通过keys()、values()、entries()迭代。
+
+### WeakSet
+值只能是Object，值消失则对应值被回收，不可迭代。
+
+## 七、迭代器与生成器
+迭代需要在一个有序集合上进行，循环是一种最简单的迭代，但是需要提前知道起始点和长度。
+### 迭代器模式
+我们把实现了Iterable接口的对象称为可迭代对象，他们可通过Iterator(迭代器)消费。
+检查一个对象是否可以通过迭代器迭代，可通过下面的方法：
+```javascript
+let num = 1
+console.log(num[Symbol.iterator]) // undefined
+
+let arr = [1,2,3]
+console.log(arr[Symbol.iterator]) // function values() { [native code] }
+```
+迭代器通过`next()`方法遍历数据，next方法返回量个属性，done和value。
+每个迭代器都能完成一次完整迭代，互相之间没有联系。
+### 自定义迭代器
+通过实现[Symbol.iterator]()方法来创建自定义迭代器。
+``` javascript
+class Foo {
+    [Symbol.iterator]() {
+        return {
+            next() {
+                return { done: true }
+            }
+        }
+    }
+}
+
+let foo = new Foo()
+console.log(foo[Symbol.iterator]().next()) // {done:true}
+```
+### 提前中止迭代器
+return()方法，对于for...of，可用break、continue、return或throw提前退出。
+
+## 生成器
+生成器拥有在一个函数块内暂停和恢复代码执行的能力。生成器是一个函数，在函数名称前加一个*号表示它是一个生成器。
+::: tip 注意
+箭头函数不能用来定义生成器函数。
+:::
+调用生成器函数会生成一个生成器对象，next()方法可以执行生成器。
+### 通过yield中断执行
+没有yield的生成器，调用一次next()就会返回{done:true}，函数体中遇到yield，生成器会停止，知道下次调用next()。
+yield可以返回值，通过yield返回的值，done为false，通过return返回的值，done为true。
+生成器也是一种可迭代对象。
+yield还可以当作中间参数使用，通过next()传递的值能通过yield接收。
+```javascript
+function *foo(t) {
+    console.log(t)
+    let a = yield t
+    console.log(a)
+    return t
+}
+
+let a = foo(1)
+console.log(a.next(2))
+console.log(a.next(3))
+// 1
+// {"value":1,"done":false}
+// 3
+// {"value":1,"done":true}
+```
+上面的2没有输出，是因为第一次调用next传入的值是初始化foo是传入的值。
+yield * [1,2,3]可以迭代三次。
+
+## 八、对象、类与面向对象编程
+
