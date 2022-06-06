@@ -298,7 +298,8 @@ Set会维护值插入时的顺序，可通过keys()、values()、entries()迭代
 
 ## 七、迭代器与生成器
 迭代需要在一个有序集合上进行，循环是一种最简单的迭代，但是需要提前知道起始点和长度。
-### 迭代器模式
+### 迭代器
+#### 迭代器模式
 我们把实现了Iterable接口的对象称为可迭代对象，他们可通过Iterator(迭代器)消费。
 检查一个对象是否可以通过迭代器迭代，可通过下面的方法：
 ```javascript
@@ -310,7 +311,7 @@ console.log(arr[Symbol.iterator]) // function values() { [native code] }
 ```
 迭代器通过`next()`方法遍历数据，next方法返回量个属性，done和value。
 每个迭代器都能完成一次完整迭代，互相之间没有联系。
-### 自定义迭代器
+#### 自定义迭代器
 通过实现[Symbol.iterator]()方法来创建自定义迭代器。
 ``` javascript
 class Foo {
@@ -326,16 +327,16 @@ class Foo {
 let foo = new Foo()
 console.log(foo[Symbol.iterator]().next()) // {done:true}
 ```
-### 提前中止迭代器
+#### 提前中止迭代器
 return()方法，对于for...of，可用break、continue、return或throw提前退出。
 
-## 生成器
+### 生成器
 生成器拥有在一个函数块内暂停和恢复代码执行的能力。生成器是一个函数，在函数名称前加一个*号表示它是一个生成器。
 ::: tip 注意
 箭头函数不能用来定义生成器函数。
 :::
 调用生成器函数会生成一个生成器对象，next()方法可以执行生成器。
-### 通过yield中断执行
+#### 通过yield中断执行
 没有yield的生成器，调用一次next()就会返回{done:true}，函数体中遇到yield，生成器会停止，知道下次调用next()。
 yield可以返回值，通过yield返回的值，done为false，通过return返回的值，done为true。
 生成器也是一种可迭代对象。
@@ -360,4 +361,65 @@ console.log(a.next(3))
 yield * [1,2,3]可以迭代三次。
 
 ## 八、对象、类与面向对象编程
+对象是一组属性的无序集合。
+### 理解对象
+对象可通过创建Object的实例创建，或直接通过字面量创建。
+#### 数据属性和访问器属性
+对象有两种属性：数据属性和访问器属性。
+数据属性是保存数据值的位置，有四个特性描述它们的行为：
+- [[Configurable]]：是否可以被删除或修改，默认为true。
+- [[Enumerable]]：是否可以被for...in循环遍历，默认为true。
+- [[Writable]]：是否可以被赋值，默认为true。
+- [[Value]]：属性的值，默认为undefined。
+
+访问器属性是一个函数，用来描述对象的属性的读取和设置行为，它包含四个特性：
+- [[Configurable]]：是否可以被删除或修改，默认为true。
+- [[Enumerable]]：是否可以被for...in循环遍历，默认为true。
+- [[Get]]：读取属性的函数。
+- [[Set]]：设置属性的函数。
+访问器属性不能直接定义，必须通过Object.defineProperty()方法。
+如果需要一次定义多个属性，可以使用Object.defineProperties()方法。
+```javascript
+let persion = {}
+Object.definePropertyS(persion, {
+    name: {
+        value: '张三'
+    },
+    age: {
+        value: 18
+    },
+    job: {
+        get: function() {
+            return 'web'
+        }
+    }
+})
+```
+#### 读取属性特性
+使用Object.getOwnPropertyDescriptor()方法可以取得指定属性的属性描述符。返回值是一个对象，对于访问器属性包含configurable、enumerable、get和set属性，对于数据属性包含configurable、enumerable、writable和value属性。ECMAScript 2017新增了Object.getOwnPropertyDescriptors()静态方法，相当于对每个属性调用Object.getOwnPropertyDescriptor()。
+#### 合并对象
+Object.assign()方法，将源对象的所有可枚举自身属性，复制到目标对象。
+#### 相等判定
+Object.is()方法，判断两个值是否相等。对于-0，+0，isNaN也能正确返回。
+#### 属性简写
+属性名和变量名一致时，可以只写变量名。
+#### 结构语法
+...
+### 创建对象
+
+#### Object构造函数或字面量
+#### 工厂模式
+
+#### 构造函数模式
+通过new+构造函数名，创建一个新对象。
+new一个实例的过程如下：
+1. 在内存中创建一个新对象。
+2. 新对象的__proto__属性指向构造函数的prototype属性。
+3. 构造函数内部this指向新对象。
+4. 执行构造函数内部代码
+5. 构造函数返回新对象。如果手动return，则返回return的内容。
+#### 原型模式
+每个函数都有一个prototype属性，指向一个对象。
+理解原型：
+创建一个函数时，会自动获得一个prototype属性，prototype会自动获得一个constructor属性，指向创建函数的构造函数。prototype上的属性是共享的，每一个实例都能访问得到。
 
