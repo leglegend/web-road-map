@@ -422,4 +422,168 @@ new一个实例的过程如下：
 每个函数都有一个prototype属性，指向一个对象。
 理解原型：
 创建一个函数时，会自动获得一个prototype属性，prototype会自动获得一个constructor属性，指向创建函数的构造函数。prototype上的属性是共享的，每一个实例都能访问得到。
+判断一个实例对象是否是通过某个构造函数创建的，可以通过以下几种方式：
+- instanceof：判断构造函数的prototype属性是否出现在实例对象的原型链上。
+- XX.prototype.isPrototypeOf(xx)：判断原型对象是否出现在实例对象的原型链上。
+- Object.getPrototypeOf()，返回对象的__proto__属性。
 
+可以通过Object.setPrototypeOf()方法设置一个对象的__proto__属性，但是对性能有很大影响。也可以通过Object.create()创建一个新的对象，同时为其指定原型。
+
+Object.hasOwnProperty()可以判断实例对象上有没有某个属性，in操作符可以判断通过该对象是否能访问到某个属性。这两个结合可以判断实例对象的原型链上是否存在某个属性：xx.hasOwnProperty(name) == false && name in xx == true
+
+for in 可以循环实例对象所有可枚举属性，包括原型对象的属性。Object.keys()只会返回实例对象上的可枚举属性，Object.getOwnPropertyNames()可以返回所有实例属性，包括不可枚举属性。
+
+如果需要重写原型对象，可以在声明构造函数后，直接通过Persion.prototype= {}的方式重写，不过这样会把prototype自带的constructor属性覆盖掉，可以通过defineProperty再定义回来enmuerable设置为false。
+
+#### 对象迭代
+Object.values()和Object.entries()接收一个对象，返回它们内容的数组。Object.values()返回对象值的数组，Object.entries()返回键/值对的数组。
+
+### 继承
+#### 原型链
+每个构造函数都有一个原型对象，原型有个属性指回构造函数，实例对象内部有个指针指向原型对象，如果原型对象也是某个构造函数的实例，那原型对象也有个指针指向它构造函数的原型，这样实例和原型之间就构造了一条原型链。对于绝大多数实例来说，原型链的顶端就是Object.prototype，Object.prototype是一个构造函数，它的原型是null。
+#### 盗用构造函数
+在子类构造函数中调用父类构造函数，解决原型包含引用值导致的继承问题。
+```javascript
+function SuperType(name) {
+  this.name = name
+}
+function SubType() {
+  // 继承SuperType并传参
+  SuperType.call(this, 'Nicholas')
+  // 实例属性
+  this.age = 29
+}
+let instance = new SubType()
+console.log(instance.name) // "Nicholas";
+console.log(instance.age) // 29
+```
+#### 组合继承
+通过原型链继承原型上的方法和属性，通过盗用构造函数继承实例属性。
+```javascript
+function SuperType(name) {
+  this.name = name
+  this.colors = ['red', 'blue', 'green']
+}
+SuperType.prototype.sayName = function () {
+  console.log(this.name)
+}
+function SubType(name, age) {
+  // 继承属性
+  SuperType.call(this, name)
+  this.age = age
+}
+// 继承方法
+SubType.prototype = new SuperType()
+```
+
+#### 原型式继承
+```javascript
+function object(o) {
+  function F() {}
+  F.prototype = o
+  return new F()
+}
+
+let person = {
+  name: 'Nicholas',
+  friends: ['Shelby', 'Court', 'Van']
+}
+let anotherPerson = object(person)
+anotherPerson.name = 'Greg'
+anotherPerson.friends.push('Rob')
+let yetAnotherPerson = object(person)
+yetAnotherPerson.name = 'Linda'
+yetAnotherPerson.friends.push('Barbie')
+console.log(person.friends) // "Shelby, Court, Van, Rob, Barbie"
+```
+#### 寄生式继承
+创建一个实现继承的函数，以某种方式增强对象，然后返回这个对象。
+
+#### 寄生组合式继承
+寄生式组合继承通过盗用构造函数继承属性，但使用混合式原型链继承方法。基本思路是不通过调用父类构造函数给子类原型赋值，而是取得父类原型的一个副本。说到底就是使用寄生式继承来继承父类原型，然后将返回的新对象赋值给子类原型。
+```javascript
+function object(o) {
+  function F() {}
+  F.prototype = o
+  return new F()
+}
+
+function SuperType(name) {
+  this.name = name
+  this.colors = ['red', 'blue', 'green']
+}
+
+SuperType.prototype.sayName = function () {
+  console.log(this.name)
+}
+
+function SubType(name, age) {
+  SuperType.call(this, name) // 盗用继承
+  this.age = age
+}
+
+function inheritPrototype(subType, superType) {
+  let prototype = object(superType.prototype) // 创建对象
+  prototype.constructor = subType // 增强对象
+  subType.prototype = prototype // 赋值对象
+}
+
+inheritPrototype(SubType, SuperType)
+```
+
+### 类
+```javascript
+    // 类声明
+    class Person {}
+    // 类表达式
+    const Animal = class {}
+```
+类没有提升，受块作用域限制。类可以包含构造函数方法、实例方法、获取函数、设置函数和静态类方法。
+```javascript
+    // 空类定义，有效
+    class Foo {}
+    // 有构造函数的类，有效
+    class Bar {
+      constructor() {}
+    }
+    // 有获取函数的类，有效
+    class Baz {
+      get myBaz() {}
+    }
+    // 有静态方法的类，有效
+    class Qux {
+      static myQux() {}
+    }
+```
+#### 类构造函数
+使用new和类实例化时，会调用类的构造函数，其他操作和实例化构造函数一致。
+#### 实例、原型和类成员
+在类构造函数中通过this添加的属性会成为实例属性，在类块中定义的方法会成为原型方法。类块中不能添加原始值或对象。类支持设置获取和访问器。
+```javascript
+class Persion {
+    get name() {
+        return this._name
+    }
+
+    set name(value) {
+        this._name = value
+    }
+}
+```
+可以在类上定义静态方法，每个类只能定义一个静态方法，在静态方法中，this指向类自身。
+静态方法适合作为实例工厂：
+```javascript
+    class Person {
+      constructor(age) {
+        this.age_ = age;
+      }
+      sayAge() {
+        console.log(this.age_);
+      }
+      static create() {
+        // 使用随机年龄创建并返回一个Person实例
+        return new Person(Math.floor(Math.random()＊100));
+      }
+    }
+    console.log(Person.create()); // Person { age_: ... }
+```
