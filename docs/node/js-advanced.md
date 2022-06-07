@@ -570,7 +570,7 @@ class Persion {
     }
 }
 ```
-可以在类上定义静态方法，每个类只能定义一个静态方法，在静态方法中，this指向类自身。
+可以在类上定义静态方法，每个类只能定义一个静态方法，在静态方法中，this指向类自身。静态方法将直接加在类身上，而普通方法则加在类的原型上。
 静态方法适合作为实例工厂：
 ```javascript
     class Person {
@@ -587,3 +587,173 @@ class Persion {
     }
     console.log(Person.create()); // Person { age_: ... }
 ```
+类内部不支持添加原型或成员数据，但是外部可以。
+```javascript
+Person.prototype.name = 'Linda'
+Person.name = 'Jack'
+```
+
+可以在类内部定义生成器：
+```javascript
+class Person {
+  // 在原型上定义生成器方法
+  *createNicknameIterator() {
+    yield 'Jack'
+    yield 'Jake'
+    yield 'J-Dog'
+  }
+  // 在类上定义生成器方法
+  static *createJobIterator() {
+    yield 'Butcher'
+    yield 'Baker'
+    yield 'Candlestick maker'
+  }
+  // 在原型上定义生成器
+  *[Symbol.iterator]() {
+    yield* [1, 2, 3]
+  }
+}
+let jobIter = Person.createJobIterator()
+console.log(jobIter.next().value) // Butcher
+console.log(jobIter.next().value) // Baker
+console.log(jobIter.next().value) // Candlestick maker
+let p = new Person()
+let nicknameIter = p.createNicknameIterator()
+console.log(nicknameIter.next().value) // Jack
+console.log(nicknameIter.next().value) // Jake
+console.log(nicknameIter.next().value) // J-Dog
+```
+#### 类的继承
+通过`extends`可以继承类或者构造函数。
+```javascript
+class Vehicle {}
+// 继承类
+class Bus extends Vehicle {}
+let b = new Bus()
+console.log(b instanceof Bus) // true
+console.log(b instanceof Vehicle) // true
+function Person() {}
+// 继承普通构造函数
+class Engineer extends Person {}
+let e = new Engineer()
+console.log(e instanceof Engineer) // true
+console.log(e instanceof Person) // true
+```
+派生类可通过super调用父类的构造函数。
+```javascript
+class Vehicle {
+  constructor() {
+    this.hasEngine = true
+  }
+  static identify() {
+    console.log('vehicle')
+  }
+}
+class Bus extends Vehicle {
+  constructor() {
+    // 不要在调用super()之前引用this，否则会抛出ReferenceError
+    super() // 相当于super.constructor()
+    console.log(this instanceof Vehicle) // true
+    console.log(this) // Bus { hasEngine: true }
+  }
+  // 静态方法中可以通过super调用继承父类的静态方法
+   static identify() {
+    super.identify()
+  }
+}
+new Bus()
+Bus.identify() // vehicle
+```
+::: tip 注意
+- super只能在派生类的构造函数和静态方法中使用，要么调用构造函数，要么调用静态方法。
+- super()会调用父类的构造方法，并将返回的实例赋值给this。
+- 没有定义构造函数会自动调用super()，定义了则必须手动调用super()或返回一个对象。
+:::
+
+##### 抽象基类
+只能被继承，不能被实例化。
+```javascript
+// 抽象基类
+class Vehicle {
+  constructor() {
+    console.log(new.target)
+    if (new.target === Vehicle) {
+      throw new Error('Vehicle cannot be directly instantiated')
+    }
+  }
+}
+// 派生类
+class Bus extends Vehicle {}
+new Bus() // class Bus {}
+new Vehicle() // class Vehicle {}
+// Error: Vehicle cannot be directly instantiated
+```
+
+## 九、代理与反射
+
+### 代理基础
+代理是目标对象的抽象，目标对象可通过代理来操作，并施加行为。
+```javascript
+const target = {
+  id: 'target'
+}
+const handler = {}
+const proxy = new Proxy(target, handler)
+```
+#### 捕获器
+可以通过在handler定义一个get方法设置捕获其，捕获其接收目标对象，查询属性，还有代理属性三个参数。
+```javascript
+    const target = {
+      foo: 'bar'
+    };
+    const handler = {
+      get(trapTarget, property, receiver) {
+        return trapTarget[property];
+      }
+    };
+    const proxy = new Proxy(target, handler);
+    console.log(proxy.foo);   // bar
+    console.log(target.foo); // bar
+```
+可以通过trapTarget[property]重建原始操作。调用全局Reflect方法可以轻松重建原始行为。
+```javascript
+const target = {
+  foo: 'bar'
+}
+const handler = {
+  get() {
+    return Reflect.get(...arguments)
+  }
+}
+const proxy = new Proxy(target, handler)
+console.log(target.foo) // bar
+console.log(proxy.foo) // bar
+// 可简写
+const handler = {
+  get: Reflect.get
+}
+```
+#### 撤销代理
+```javascript
+    const target = {
+      foo: 'bar'
+    };
+    const handler = {
+      get() {
+        return 'intercepted';
+      }
+    };
+    const { proxy, revoke } = Proxy.revocable(target, handler);
+    console.log(proxy.foo);    // intercepted
+    console.log(target.foo);   // bar
+    revoke();
+    console.log(proxy.foo);    // TypeError
+```
+#### 反射
+- 反射api不限于捕获器
+- 大多数反射api在Object有对应方法
+#### 代理的代理
+#### 代理不能代理Date
+
+### 代理捕获器与反射方法
+代理有13中基本操作
