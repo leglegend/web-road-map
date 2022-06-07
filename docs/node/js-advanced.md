@@ -756,4 +756,147 @@ const handler = {
 #### 代理不能代理Date
 
 ### 代理捕获器与反射方法
-代理有13中基本操作
+代理有13种基本操作，这些操作有各自不同的反射API。
+1. get(target,property,receiver) => Reflect.get()
+可拦截操作：
+- proxy.property 
+- proxy[property] 
+- Object.create(proxy)[property] 
+- Reflect.get(proxy,property,receiver)
+2. set(target,property,value,receiver) => Reflect.set()
+可拦截操作：
+- proxy.property=value 
+- proxy[property]=value 
+- Object.create(proxy)[property]=value 
+- Reflect.set(proxy,property,value,receiver)
+```javascript
+    const myTarget = {};
+    const proxy = new Proxy(myTarget, {
+      set(target, property, value, receiver) {
+        console.log('set()');
+        return Reflect.set(...arguments)
+      }
+    });
+    proxy.foo = 'bar';
+    // set()
+```
+返回true表示成功，false表示失败。
+3. has(target,property) => Reflect.has()
+可拦截操作：
+- property in proxy
+- property in Object.create(proxy)
+- with(proxy) {(property); }
+- Reflect.has(proxy, property)
+返回true表示存在，false表示不存在。
+4. defineProperty(target,property,descriptor) => Reflect.defineProperty()
+```javascript
+descriptor: {
+  enmuerable: true,  // 可枚举
+  configurable: true, // 可编辑删除
+  writable: true, // 可编辑
+  value: 'haha'
+}
+```
+可拦截操作：
+- Object.defineProperty(proxy, property, descriptor)
+- Reflect.defineProperty(proxy, property, descriptor)
+
+5. getOwnPropertyDescriptor(target,property) => Reflect.getOwnPropertyDescriptor()
+6. deleteProperty(target,property) => Reflect.deleteProperty()
+可拦截操作：
+- delete proxy.property
+- delete proxy[property]
+- Reflect.deleteProperty(proxy,property)
+返回ture表示删除成功，false表示删除失败。
+7. ownKeys(target) => Reflect.ownKeys()
+可拦截操作：
+- Object.getOwnPropertyNames(proxy)
+- Object.getOwnPropertySymbols(proxy)
+- Object.keys(proxy)
+- Reflect.ownKeys(proxy)
+8. getPrototypeOf(target) => Reflect.getPrototypeOf()
+可拦截操作：
+- Object.getPrototypeOf(proxy)
+- Reflect.getPrototypeOf(proxy)
+- proxy.__proto__
+- Object.prototype.isPrototypeOf(proxy)
+- proxy instanceof Object
+9. setPrototypeOf(target,prototype) => Reflect.setPrototypeOf()
+10. isExtensible(target) => Reflect.isExtensible() 是否可拓展的
+11. preventExtensions(target) => Reflect.preventExtensions() 方法让一个对象变的不可扩展，也就是永远不能再添加新的属性。
+12. apply(target,thisArg,argumentsList) => Reflect.apply() 调用函数时被调用
+```javascript
+    const myTarget = () => {};
+    const proxy = new Proxy(myTarget, {
+      apply(target, thisArg, ...argumentsList) {
+        console.log('apply()');
+        return Reflect.apply(...arguments)
+      }
+    });
+    proxy();
+    // apply()
+```
+可拦截操作：
+- proxy(...argumentsList)
+- Function.prototype.apply(thisArg, argumentsList)
+- Function.prototype.call(thisArg, ...argumentsList)
+- Reflect.apply(target, thisArgument, argumentsList)
+13. construct(target,argumentsList,newTarget) => Reflect.construct()
+```javascript
+    const myTarget = function() {};
+    const proxy = new Proxy(myTarget, {
+      construct(target, argumentsList, newTarget) {
+        console.log('construct()');
+        return Reflect.construct(...arguments)
+      }
+    });
+    new proxy;
+    // construct()
+```
+可拦截操作：
+- new proxy(...argumentsList)
+- Reflect.construct(target, argumentsList, newTarget)
+
+### 代理模式
+通过捕获get、set、has等操作，监控对象什么时候被修改访问。
+隐藏属性（get时返回undefined）
+属性验证（set时选择是否设置值）
+函数构造参数认证（apply和constructoer时返回失败）
+
+## 十、函数
+### 箭头函数
+```javascript
+let f = (a,b)=> {
+  return a+b
+}
+```
+任何可用函数表达式的地方都可以使用箭头函数，声明函数则只能用正式函数。
+只有一个参数可以省略括号，只有一行代码可以省略大括号和return。
+箭头函数不能使用arguments、super和new.target，也不能用作构造函数。此外，箭头函数也没有prototype属性。
+
+### 参数
+函数内部访问arguments对象，会返回每一个参数的值。
+### 默认值
+```javascript
+    function makeKing(name = 'key') {
+      return name
+    }
+```
+arguments对象始终以传入的值为准。
+### 函数声明与函数表达式
+函数声明会有函数声明提升（类似于var的变量提升）。
+函数表达式不会提升，用var声明也不会。
+### 函数作为值
+可以把函数当作变量，当作参数传递给另一个变量。
+### 函数内部
+arguments
+this：引用的是把函数当成方法调用的上下文对象。
+谁调用就指向谁，否则指向window
+箭头函数中，this指向定义它的上下文。
+new.target ： new是指向实例 否则为undefined
+### 函数属性与方法
+length（命名参数的个数）和prototype（原型对象）
+bind()会返回一个新的实例，该实例的this指向bind的参数
+### 闭包
+闭包指的是那些引用了另一个函数作用域中变量的函数，通常是在嵌套函数中实现的。
+
