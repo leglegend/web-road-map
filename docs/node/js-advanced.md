@@ -899,4 +899,129 @@ length（命名参数的个数）和prototype（原型对象）
 bind()会返回一个新的实例，该实例的this指向bind的参数
 ### 闭包
 闭包指的是那些引用了另一个函数作用域中变量的函数，通常是在嵌套函数中实现的。
+闭包的作用域链包含它引用的变量所在函数的作用域。
+#### 闭包中的this
+每个函数在创建时都会创建两个特殊变量，this和arguments。内部函数永远无法直接访问到外部函数的这两个变量。
+内部函数使用箭头函数定义，则this指向定义它的函数的this。
+通过函数声明创建函数，则this指向window。
+### 立即调用函数表达式
+立即调用的匿名函数又被称为立即调用函数表达式(IIFE)。
+```javascript
+(function(){
+ // 块级作用域
+})()
+```
+### 私有变量
+函数内部的变量是不能直接在函数外部调用的，但是闭包可以调用。通过返回一个函数达到访问私有变量的目的。
+### 静态私有变量
+```javascript
+(function () {
+  let name = ''
+  Person = function (value) {
+    name = value
+  }
+  Person.prototype.getName = function () {
+    return name
+  }
+  Person.prototype.setName = function (value) {
+    name = value
+  }
+})()
+```
+### 单例对象
+```javascript
+let singleton = (function () {
+  // 私有变量和私有函数
+  let privateVariable = 10
+  function privateFunction() {
+    return false
+  }
+  // 特权/公有方法和属性
+  return {
+    publicProperty: true,
+    publicMethod() {
+      privateVariable++
+      return privateFunction()
+    }
+  }
+})()
+```
+## 十一、期约与异步函数
+### 异步编程
+JS的异步行为会推入一个队列中，当前同步代码执行完毕后，会执行队列中的异步代码。
+ES6之前多用回调完成异步操作。
+### 期约
+```javascript
+    let p = new Promise(() => {});
+    setTimeout(console.log, 0, p);   // Promise <pending>
+```
+期约状态：
+- 待定（pending）
+- 兑现（fulfilled，有时候也称为“解决”, resolved）
+- 拒绝（rejected）
+期约的执行器函数是同步执行的。
+reject会抛出异常，无法通过try...catch捕获。
+Promise.resolve()相当于new Promise(resolve=>resolve())。
+Promise.reject()相当于new Promise((resolve,reject)=>reject())。
+#### Promise的实例方法
+- Promise.prototype.then(onResolved, onRejected)
+返回一个新的Promise实例，新实例默认通过Promise.resolve()包装返回值，无返回值则为undefined。
+- Promise.prototype.catch(onRejected)
+事实上，这个方法就是一个语法糖，调用它就相当于调用Promise.prototype.then(null, onRejected)。
+catch也会返回一个新的Promise实例。
+- Promise.prototype.finally(onFinally)
+无论解决还是拒绝，这个方法都会执行，这个方法返回夫期约的传递。
+#### 非重入期约方法
+即使直接返回fullfilled或rejected的Promise，then中的方法也不会立即执行，而是被推入队列中，等到主线程执行完毕后再执行。
+
+#### 邻近处理程序的执行顺序
+先添加到队列的期约先执行，后添加的期约后执行。所以.then().then().then()这种方式实际上是按循序执行的。
+#### 期约连锁
+.then().then().then()
+Promise.all()静态方法创建的期约会在一组期约全部解决之后再解决。
+```javascript
+    let p = Promise.all([
+      Promise.resolve(3),
+      Promise.resolve(),
+      Promise.resolve(4)
+    ]);
+    p.then((values) => setTimeout(console.log, 0, values)); // [3, undefined, 4]
+```
+如果被拒接，则第一个拒绝的理由会传入onRejected方法。
+Promise.race()静态方法返回一个包装期约，是一组集合中最先解决或拒绝的期约的镜像。
+Promise.race()不会对解决或拒绝的期约区别对待。无论是解决还是拒绝，只要是第一个落定的期约，Promise.race()就会包装其解决值或拒绝理由并返回新期约。
+#### 期约扩展
+期约取消：resolve之前判断是否执行resolve
+进度通知：TODO
+
+### 异步函数
+async/await是ES8规范新增的，使得异步代码能够同步执行。
+- async关键词用于声明异步函数，可以用在函数声明、函数表达式、箭头函数和方法上。
+```javascript
+asycn function f() {}
+let f = function {}
+let f = async () => {}
+let o = {
+  async f() {}
+}
+```
+异步函数的返回值会用Promise.resolve()包装。在异步函数抛出错误会返回拒绝期约。
+- await关键字可以暂停异步函数代码的执行，等待期约解决。
+await期待一个Promise实例(不是必须，非异步实例会直接返回)，然后对其解包，返回值是resolve参数的值。
+reject需要catch捕获，返回值会被await解包。或者直接使用try...catch捕获。
+await只能在异步函数中使用，不能再顶层上下文使用，
+调用异步函数在没遇到await之前和同步函数没有区别，遇到await之后，会记录这个位置，等到右边可用了，推送到消息队列中，恢复执行。
+```javascript
+await async1()
+await async2()
+await async3()
+// 如果三个函数没有前后依赖可以这样改
+let a1 = async1()
+let a2 = async2()
+let a3 = async3()
+await a1
+await a2
+await a3
+```
+
 
