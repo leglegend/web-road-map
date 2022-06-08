@@ -1075,6 +1075,122 @@ innerWidth、innerHeight、outerWidth和outerHeight。outerWidth和outerHeight�
 ```
 #### 导航与打开新窗口
 window.open(url, target, features)  
-target可一世一个iframe的id，或者是_blank，
+target可一世一个iframe的id，或者是_blank。。。
+#### 定时器
+setTimeout()用于指定在一定时间后执行某些代码，而setInterval()用于指定每隔一段时间执行某些代码。  
+timeoutID = setTimeout(function,delay,...args)  
+为了调度不同代码的执行，JavaScript维护了一个任务队列。其中的任务会按照添加到队列的先后顺序执行。delay只是告诉JS在多少毫秒后把function推到队列中。  
+clearTimeout(timeoutID)可以在setTimeout执行前取消执行。  
+::: tip 注意
+所有超时执行函数的this都指向window，如果需要期调用它的函数的this，可以用箭头函数。
+:::
+setTimeout和setInterval都是按时往tasks queue中添加任务，当前任务执行完后才会执行下个任务，执行当前代码，回调函数，事件监听回调都会往任务队列添加任务。  
+js中不止这一个任务队列，除了Tasks还有Microttasks，当前线的Task运行完成后，会优先处理Microttasks中的任务，Microttasks中的任务处理完后，才会接着处理Tasks中的任务，如果处理Microttasks过程中还有Microttask加进来，会一并处理完成后再处理Tasks。
+#### 系统对话框
+alert()、confirm()和prompt()方法调用时代码会停止执行，关闭后才会显示
+### location对象
+window.location和document.location都指向location，location保存着当前加载文档的信息，也保存着把URL解析为离散片段后能够通过属性访问的信息。  
+- location.search：返回了url中?开始的内容
+URLSearchParams可以解析url参数：
+```javascript
+    let qs = "? q=javascript&num=10";
+    let searchParams = new URLSearchParams(qs);
+    alert(searchParams.toString());   // " q=javascript&num=10"
+    searchParams.has("num");           // true
+    searchParams.get("num");           // 10
+    searchParams.set("page", "3");
+    alert(searchParams.toString());   // " q=javascript&num=10&page=3"
+    searchParams.delete("q");
+    alert(searchParams.toString());   // " num=10&page=3"
+```
+- location.assign(url)
+导航到新URL的操作，同时在浏览器历史记录中增加一条记录，相当于：
+```javascript
+window.location = "http://www.wrox.com";
+location.href = "http://www.wrox.com";
+```
+修改location对象的属性也会修改当前加载的页面：
+```javascript
+    // 假设当前URL为http://www.wrox.com/WileyCDA/
+    // 把URL修改为http://www.wrox.com/WileyCDA/#section1
+    location.hash = "#section1";
+    // 把URL修改为http://www.wrox.com/WileyCDA/?q=javascript
+    location.search = "? q=javascript";
+    // 把URL修改为http://www.somewhere.com/WileyCDA/
+    location.hostname = "www.somewhere.com";
+    // 把URL修改为http://www.somewhere.com/mydir/
+    location.pathname = "mydir";
+    // 把URL修改为http://www.somewhere.com:8080/WileyCDA/
+    location.port = 8080;
+```
+除了hash之外，只要修改location的一个属性，就会导致页面重新加载新URL，修改hash只会添加一条历史记录。  
+- location.replace(url)
+这个方法接收一个URL参数，但重新加载后不会增加历史记录。调用replace()之后，用户不能回到前一页。
+- location.reload()
+它能重新加载当前显示的页面。
+```javascript
+    location.reload();      // 重新加载，可能是从缓存加载
+    location.reload(true); // 重新加载，从服务器加载
+```
+### navigator对象
+navigator对象的属性通常用于确定浏览器的类型。
+- navigator.plugins
+```javascript
+[{
+  name:'插件名称',
+  description:'插件介绍',
+  filename:'插件的文件名',
+  length:'由当前插件处理的MIME类型数量'
+}]
+```
+- navigator.registerProtocolHandler()
+可以借助这个方法将Web应用程序注册为像桌面软件一样的默认应用程序。  
+必须传入3个参数：要处理的协议（如"mailto"或"ftp"）、处理该协议的URL，以及应用名称。
 
-
+### screen对象
+客户端显示器的信息，比如像素宽度和像素高度。
+### history对象
+history对象表示当前窗口首次使用以来用户的导航历史记录。  
+- history.go(index of string)
+```javascript
+    // 后退一页
+    history.go(-1);
+    // 前进一页
+    history.go(1);
+    // 前进两页
+    history.go(2);
+    // 导航到最近的wrox.com页面
+    history.go("wrox.com");
+    // 导航到最近的nczonline.net页面
+    history.go("nczonline.net");
+    // 后退一页
+    history.back();
+    // 前进一页
+    history.forward();
+```
+- history.length 这个属性反映了历史记录的数量，包括可以前进和后退的页面。
+#### 历史状态管理
+状态管理API则可以让开发者改变浏览器URL而不会加载新页面，history.pushState()方法。这个方法接收3个参数：一个state对象、一个新状态的标题和一个（可选的）相对URL。pushState()会创建新的历史记录，所以也会相应地启用“后退”按钮。单击“后退”按钮，就会触发window对象上的popstate事件。
+## 十三、客户端检测
+### 能力检测
+又称特性检测，测试浏览器是否支持某个特性。例如检测浏览器是否支持getElementById：
+```javascript
+    function getElement(id) {
+      if (document.getElementById) {
+        return document.getElementById(id);
+      } else if (document.all) {
+        return document.all[id];
+      } else {
+        throw new Error("No way to retrieve element! ");
+      }
+    }
+```
+先检测最优方法，再检测备用方案，实在不行再抛错。
+#### 安全能力检测
+进行能力检测时应该尽量使用typeof操作符，但光有它还不够。尤其是某些宿主对象并不保证对typeof测试返回合理的值。
+#### 基于能力检测进行浏览器分析
+集中检测所有能力，而不是等到用的时候再重复检测。  
+根据对浏览器特性的检测并与已知特性对比，确认用户使用的是什么浏览器。  
+通过检测一种或一组能力，并不总能确定使用的是哪种浏览器。  
+### 用户代理检测
+用户代理检测通过浏览器的用户代理字符串确定使用的是什么浏览器。navigator.userAgent可以访问到用户代理。
