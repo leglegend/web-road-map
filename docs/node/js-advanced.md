@@ -1023,5 +1023,58 @@ await a1
 await a2
 await a3
 ```
+## 十二、BOM
+浏览器对象模型（BOM, Browser ObjectModel）。
+### window对象
+ECMAScript中的Global对象，也是浏览器窗口的JavaScript接口。  
+var在全局声明的变量和函数，都会被挂载到window对象上。  
+#### 窗口关系
+top对象始终指向最上层窗口。  
+parent指向当前窗口的父窗口。  
+self始终指向window。
+#### 窗口位置与像素比
+现代浏览器提供了screenLeft和screenTop属性，用于表示窗口相对于屏幕左侧和顶部的位置，返回值的单位是CSS像素。  
+可以使用moveTo()和moveBy()方法移动窗口。  
+```javascript
+    // 把窗口移动到左上角
+    window.moveTo(0,0);
+    // 把窗口向下移动100 像素
+    window.moveBy(0, 100);
+    // 把窗口移动到坐标位置(200, 300)
+    window.moveTo(200, 300);
+    // 把窗口向左移动50 像素
+    window.moveBy(-50, 0);
+```
+**像素比**  
+不同设备分辨率不同，高分辨率下的设备应该和低分辨率设备保持1个单位像素大小相同。  
+物理像素和实际像素的转换比率由window.devicePixelRatio属性提供。  
+#### 窗口大小
+innerWidth、innerHeight、outerWidth和outerHeight。outerWidth和outerHeight返回浏览器窗口自身的大小。innerWidth和innerHeight返回浏览器窗口中页面视口的大小（不包含浏览器边框和工具栏）。  
+```javascript
+    // 缩放到100×100
+    window.resizeTo(100, 100);
+    // 缩放到200×150
+    window.resizeBy(100, 50);
+    // 缩放到300×300
+    window.resizeTo(300, 300);
+```
+#### 窗口滚动
+```javascript
+    // 正常滚动
+    window.scrollTo({
+      left: 100,
+      top: 100,
+      behavior: 'auto'
+    });
+    // 平滑滚动
+    window.scrollTo({
+      left: 100,
+      top: 100,
+      behavior: 'smooth'
+    });
+```
+#### 导航与打开新窗口
+window.open(url, target, features)  
+target可一世一个iframe的id，或者是_blank，
 
 

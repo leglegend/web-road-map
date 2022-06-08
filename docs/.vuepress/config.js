@@ -7,7 +7,7 @@ module.exports = {
       { text: '首页', link: '/' },
       { text: '导航', link: '/guide/' },
       { text: '笔记', link: '/node/' },
-      { text: 'GitHub', link: 'https://github.com/ni5328109/web-road-map' }
+      { text: 'GitHub', link: 'https://github.com/leglegend/web-road-map' }
     ],
     sidebar: {
       '/guide/': [
