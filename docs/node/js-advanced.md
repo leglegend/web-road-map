@@ -1462,3 +1462,132 @@ scrollIntoViewOptions behavior：定义过渡动画，可取的值为"smooth"和
 - scrollIntoViewIfNeeded()
 
 ## 十六、DOM2和DOM3
+HTML中的样式有3种定义方式：外部样式表（通过<link>元素）、文档样式表（使用<style>元素）和元素特定样式（使用style属性）。  
+通过DOM修改样式：
+```js
+    let myDiv = document.getElementById("myDiv");
+    // 设置背景颜色
+    myDiv.style.backgroundColor = "red";
+    // 修改大小
+    myDiv.style.width = "100px";
+    myDiv.style.height = "200px";
+    // 设置边框
+    myDiv.style.border = "1px solid black";
+
+    // cssText是一次性修改元素多个样式
+    myDiv.style.cssText = "width: 25px; height: 100px; background-color: green";
+```
+以后再看吧。。。。
+
+## 十七、事件
+### 事件流
+事件流描述了页面接收事件的顺序。  
+#### 事件冒泡
+被点击的元素，最先触发click事件。然后，click事件沿DOM树一路向上，在经过的每个节点上依次触发，直至到达document对象。
+#### 事件捕获
+在事件捕获中，click事件首先由document元素捕获，然后沿DOM树依次向下传播，直至到达实际的目标元素。
+#### DOM事件流
+事件流分为3个阶段：事件捕获、到达目标和事件冒泡。 
+### 事件处理程序
+为响应事件而调用的函数被称为事件处理程序（或事件监听器）。
+#### HTML事件处理
+以下列方式创建的事件处理程序，会创建一个函数封装属性的值：
+```js
+    function() {
+      with(document) {
+        with(this) {
+          // 属性值
+          console.log(this.value)
+        }
+      }
+    }
+```
+onclick属性中的值能直接访问到document和this里面的值
+```html
+    <!-- 输出"Click Me" -->
+    <input type="button" value="Click Me" onclick="console.log(this.value)">
+```
+这种方式的事件处理程序会创建一个局部变量event。this指向这个元素。  
+如果这个元素是一个表单输入框，则作用域链中还会包含表单元素：
+```js
+      function() {
+        with (document) {
+          with (this.form) {
+            with (this) {
+              // 属性值
+            }
+          }
+        }
+      }
+```
+#### DOM0事件处理程序
+```js
+    let btn = document.getElementById("myBtn");
+    btn.onclick = function() {
+      console.log(this.id); // myBtn
+      console.log(btn===this)  // true
+    };
+```
+DOM0事件处理程序的this指向元素本身。不会包裹this和document。  
+#### DOM2事件处理程序
+addEventListener()和removeEventListener()
+```js
+    let btn = document.getElementById("myBtn");
+    btn.addEventListener('click',function() {
+      console.log(this.id); // myBtn
+      console.log(btn===this)  // true
+    },false); // true为捕获阶段触发，false非捕获阶段触发
+```
+可以为同一个元素添加多个事件。  
+#### IE事件处理程序
+attachEvent() 需要用'onclick' this = window
+#### 跨浏览器事件处理程序
+DOM2>IE>DOM1
+
+### 事件对象
+在DOM中发生事件时，所有相关信息都会被收集并存储在一个名为event的对象中。
+#### DOM事件对象
+event对象是传给事件处理程序的唯一参数。event.type属性包含的事件类型。  
+在事件处理程序内部，this对象始终等于currentTarget的值，而target只包含事件的实际目标（触发事件的元素）。  
+event.preventDefault()方法用于阻止特定事件的默认动作(比如啊标签的href)。 
+event.stopPropagation()用于取消后续事件捕获或冒泡。  
+event.eventPhase可以确定事件流的状态：1：捕获阶段，2目标调用，3冒泡阶段。
+::: tip 注意
+event对象只在事件处理程序执行期间存在，一旦执行完毕，就会被销毁。
+:::
+#### IE事件对象
+DOM0方式指定的事件，event是window的一个属性。attachEvent()指定的，则event对象会作为唯一的参数传给处理函数，但仍是window的属性。
+returnValue设置为false相当于preventDefault()
+```js
+    var link = document.getElementById("myLink");
+    link.onclick = function() {
+      window.event.returnValue = false;
+    };
+```
+ancelBubble属性与DOM stopPropagation()方法用途一样，都可以阻止事件冒泡。  
+```js
+    var link = document.getElementById("myLink");
+    link.onclick = function() {
+      window.event.cancelBuddle = true;
+    };
+```
+#### 跨浏览器事件对象
+
+### 事件类型
+OM3 Events定义了如下事件类型:
+- 用户界面事件（UIEvent）：涉及与BOM交互的通用浏览器事件。
+- 焦点事件（FocusEvent）：在元素获得和失去焦点时触发。
+- 鼠标事件（MouseEvent）：使用鼠标在页面上执行某些操作时触发。
+- 滚轮事件（WheelEvent）：使用鼠标滚轮（或类似设备）时触发。
+- 输入事件（InputEvent）：向文档中输入文本时触发。
+- 键盘事件（KeyboardEvent）：使用键盘在页面上执行某些操作时触发。
+- 合成事件（CompositionEvent）：在使用某种IME（InputMethod Editor，输入法编辑器）输入字符时触发。
+#### 用户界面事件
+- load：在window上当页面加载完成后触发，在窗套（<frameset>）上当所有窗格（<frame>）都加载完成后触发，在<img>元素上当图片加载完成后触发，在<object>元素上当相应对象加载完成后触发。
+- unload：在window上当页面完全卸载后触发，在窗套上当所有窗格都卸载完成后触发，在<object>元素上当相应对象卸载完成后触发。
+- abort：在<object>元素上当相应对象加载完成前被用户提前终止下载时触发。
+- error：在window上当JavaScript报错时触发，在<img>元素上当无法加载指定图片时触发，在<object>元素上当无法加载相应对象时触发，在窗套上当一个或多个窗格无法完成加载时触发。
+- select：在文本框（<input>或textarea）上当用户选择了一个或多个字符时触发。
+- resize：在window或窗格上当窗口或窗格被缩放时触发。
+- scroll：当用户滚动包含滚动条的元素时在元素上触发。<body>元素包含已加载页面的滚动条。
+  
