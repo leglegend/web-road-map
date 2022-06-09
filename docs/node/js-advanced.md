@@ -1193,4 +1193,272 @@ history对象表示当前窗口首次使用以来用户的导航历史记录。
 根据对浏览器特性的检测并与已知特性对比，确认用户使用的是什么浏览器。  
 通过检测一种或一组能力，并不总能确定使用的是哪种浏览器。  
 ### 用户代理检测
-用户代理检测通过浏览器的用户代理字符串确定使用的是什么浏览器。navigator.userAgent可以访问到用户代理。
+- navigator.userAgent 用户代理检测通过浏览器的用户代理字符串确定使用的是什么浏览器。
+- navigator.oscpu 对应用户代理字符串中操作系统/系统架构相关信息。
+- navigator.vendor 包含浏览器开发商信息。
+- navigator.platform 表示浏览器所在的操作系统。
+- screen.colorDepth 和screen.pixelDepth返回一样的值，即显示器每像素颜色的位深。
+- screen.orientation 包含Screen Orientation API定义的屏幕信息。orientation.type和angle可以确定屏幕是否旋转。
+- navigator.geolocation 属性暴露了Geolocation API，可以让浏览器脚本感知当前设备的地理位置。
+- navigator. onLine 可以确定浏览器的联网状态。连网和断网会触发window的online和offline事件。
+- navigator.connection 网络连接状况。
+- navigator.getBattery() 属性暴露了Battery API，可以让浏览器脚本感知当前设备的电池状态。
+- navigator.hardwareConcurrency 返回浏览器支持的逻辑处理器核心数量
+- navigator.deviceMemory 返回设备大致的系统内存大小
+- navigator.maxTouchPoints 属性返回触摸屏支持的最大关联触点数量
+
+## 十四、DOM
+文档对象模型（DOM, Document Object Model）是HTML和XML文档的编程接口。
+### 节点层级
+任何HTML或XML文档都可以用DOM表示为一个由节点构成的层级结构。  
+document节点表示每个文档的根节点。  
+根节点的唯一子节点是<html>元素，我们称之为文档元素（documentElement）。  
+```html
+Document
+  Element <html>
+    Element <head>
+      Element <title>
+      Element <meta>
+    Element <body>
+      Element <p>
+        Element <a>
+          Element <img>
+```
+HTML中的每段标记都可以表示为这个树形结构中的一个节点。  
+DOM中总共有12种节点类型，这些类型都继承一种基本类型。  
+#### Node类型
+在JavaScript中，所有节点类型都继承Node类型，因此所有类型都共享相同的基本属性和方法。  
+每个节点都有nodeType属性，表示该节点的类型。节点类型由定义在Node类型上的12个数值常量表示： 
+- Node.ELEMENT_NODE 元素节点 1
+- Node.ATTRIBUTE_NODE 属性节点 2
+- Node.TEXT_NODE 文本节点 3
+- Node.CDATA_SECTION_NODE CDATA节点 4
+- Node.ENTITY_REFERENCE_NODE 实体引用节点 5
+- Node.ENTITY_NODE 实体节点 6
+- Node.PROCESSING_INSTRUCTION_NODE 注释节点 7
+- Node.COMMENT_NODE 注释节点 8
+- Node.DOCUMENT_NODE 文档节点 9
+- Node.DOCUMENT_TYPE_NODE 文档类型节点 10
+- Node.DOCUMENT_FRAGMENT_NODE 文档片段节点 11
+- Node.NOTATION_NODE 注释节点 12
+nodeName与nodeValue保存着有关节点的信息。  
+对元素而言，nodeName始终等于元素的标签名，而nodeValue则始终为null。  
+每个节点都有一个childNodes属性，其中包含一个NodeList的实例,previousSibling和nextSibling可以在这个列表的节点间导航，firstChild和lastChild分别指向childNodes中的第一个和最后一个子节点。    
+每个节点都有一个parentNode属性，指向其DOM树中的父元素。 
+hasChildNodes()返回节点是否有子节点。  
+##### 操作节点
+appendChild() 方法将一个节点添加到父节点的末尾。 
+insertBefore() 添加节点到开头。  
+replaceChild()方法接收两个参数：要插入的节点和要替换的节点。要替换的节点会被返回并从文档树中完全移除，要插入的节点会取而代之。  
+removeChild() 移除节点  
+cloneNode(boolean)，会返回与调用它的节点一模一样的节点，传入一个布尔，代表是否深复制，深复制会复制节点上所有子节点。返回的节点没有父亲节点，可通过appendChild插入文档中。  
+#### Document类型  
+文档对象document是HTMLDocument的实例（HTMLDocument继承Document），表示整个HTML页面。  
+- nodeType等于9；
+- nodeName值为"#document"；
+- nodeValue值为null；
+- parentNode值为null；
+- ownerDocument值为null；
+- 子节点可以是DocumentType（最多一个）、Element（最多一个）、ProcessingInstruction或Comment类型。
+- document.documentElement属性返回文档的根元素，即<html>标签。
+- document.body 属性返回文档的body元素，即<body>标签。
+- document.doctype 属性返回文档的doctype，即<!DOCTYPE>标签。
+- document.title 当前页面的标题，可修改
+- document.URL 当前页面的URL
+- document.domain 域名，只能设置当前url包含的域名
+- document.getElementById(id) 
+- document.getElementsByTagName(img) 返回数组，所有img，可传入*，返回所有元素。
+- document.getElementsByName(name) 通过元素的name属性，返回数组
+- document.anchors包含文档中所有带name属性的<a>元素。
+- document.forms包含文档中所有<form>元素（与document.getElementsByTagName ("form")返回的结果相同）。
+- document.images包含文档中所有<img>元素（与document.getElementsByTagName ("img")返回的结果相同）。
+- document.links包含文档中所有带href属性的<a>元素。
+
+### Element类型
+Element表示XML或HTML元素，对外暴露出访问元素标签名、子节点和属性的能力。Element类型的节点具有以下特征：
+- nodeType等于1；
+- nodeName值为元素的标签名；
+- nodeValue值为null；
+- parentNode值为Document或Element对象；
+- 子节点可以是Element、Text、Comment、ProcessingInstruction、CDATASection、EntityReference类型。
+可以通过nodeName或tagName属性来获取元素的标签名。注意大小写。  
+所有HTML元素都通过HTMLElement类型表示，所有HTML元素都有以下属性：
+- id，元素在文档中的唯一标识符；
+- title，包含元素的额外信息，通常以提示条形式展示；
+- lang，元素内容的语言代码（很少用）；
+- dir，语言的书写方向（"ltr"表示从左到右，"rtl"表示从右到左，同样很少用）；
+- className，相当于class属性，用于指定元素的CSS类（因为class是ECMAScript关键字，所以不能直接用这个名字）。
+```html
+    <div id="myDiv" class="bd" title="Body text" lang="en" dir="ltr"></div>
+    <script>
+          let div = document.getElementById("myDiv");
+    alert(div.id);           // "myDiv"
+    alert(div.className);   // "bd"
+    alert(div.title);        // "Body text"
+    alert(div.lang);         // "en"
+    alert(div.dir);          // "ltr"
+    </script>
+```
+可以直接通过元素来修改标签的内容。  
+与属性相关的DOM方法主要有3个：getAttribute()、setAttribute()和removeAttribute()。这些方法主要用于操纵属性。属性名不区分大小写。  
+```js
+    let div = document.getElementById("myDiv");
+    alert(div.getAttribute("id"));      // "myDiv"
+    alert(div.getAttribute("class"));   // "bd"
+    alert(div.getAttribute("title"));   // "Body text"
+    alert(div.getAttribute("lang"));    // "en"
+    alert(div.getAttribute("dir"));     // "ltr"
+```
+通过DOM对象访问的属性中有两个返回的值跟使用getAttribute()取得的值不一样：
+- style DOM对象返回一个CSSStyleDeclaration对象，getAttribute()只返回字符串。
+- onclick DOM对象返回一个函数，getAttribute()返回源码。
+setAttribute(name,value)  
+#### 创建元素
+document.createElement(tag)
+
+### Text类型
+包含按字面解释的纯文本：
+nodeType等于3；
+- nodeName值为"#text"；
+- nodeValue值为节点中包含的文本；
+- parentNode值为Element对象；
+- 不支持子节点。
+
+### Comment类型
+DOM中的注释通过Comment类型表示。
+- nodeType等于8；
+- nodeName值为"#comment"；
+- nodeValue值为注释的内容；
+- parentNode值为Document或Element对象；
+- 不支持子节点。
+### CDATASection类型
+CDATASection类型表示XML中特有的CDATA区块。  nodeType等于4；
+### DocumentType类型
+DocumentType类型的节点包含文档的文档类型（doctype）信息，DocumentType对象保存在document.doctype属性中。
+- nodeType等于10；
+- nodeName值为文档类型的名称；
+- nodeValue值为null；
+- parentNode值为Document对象；
+- 不支持子节点。
+name这个属性包含文档类型的名称，即紧跟在<! DOCTYPE后面的那串文本。
+### DocumentFragment类型
+
+### DOM编程
+#### 动态脚本
+```js
+    <script src="foo.js"></script>
+    // 使用dom实现这个操作
+    let script = document.createElement("script");
+    script.src = "foo.js";
+    document.body.appendChild(script);
+```
+还可以动态添加函数：
+```js
+    let script = document.createElement("script");
+    script.appendChild(document.createTextNode("function sayHi(){alert('hi'); }"));
+    document.body.appendChild(script);
+```
+#### 动态样式
+使用DOM添加link
+```js
+    let link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = "styles.css";
+    let head = document.getElementsByTagName("head")[0];
+    head.appendChild(link);
+```
+使用DOM添加style
+```js
+    let style = document.createElement("style");
+    style.type = "text/css";
+    style.appendChild(document.createTextNode("body{background-color:red}"));
+    let head = document.getElementsByTagName("head")[0];
+    head.appendChild(style);
+```
+#### MutationObserver接口
+可以在DOM被修改时异步执行回调。
+```js
+    let observer = new MutationObserver(() => console.log('<body> attributes changed'));
+    observer.observe(document.body, { attributes: true });
+```
+- observe() 可复用  
+使用observe方法把一个节点和一个回调函数绑定到一起。  
+- disconnect() 终止所有监听
+### 总结
+DOM由一系列节点类型构成，主要包括以下几种。
+- Node是基准节点类型，是文档一个部分的抽象表示，所有其他类型都继承Node。
+- Document类型表示整个文档，对应树形结构的根节点。在JavaScript中，document对象是Document的实例，拥有查询和获取节点的很多方法。
+- Element节点表示文档中所有HTML或XML元素，可以用来操作它们的内容和属性。
+- 其他节点类型分别表示文本内容、注释、文档类型、CDATA区块和文档片段。
+
+## 十五、DOM扩张
+### Selectors API
+- querySelector()  
+querySelector()方法接收CSS选择符参数，返回匹配该模式的第一个后代元素。  
+```js
+        // 取得<body>元素
+    let body = document.querySelector("body");
+    // 取得ID为"myDiv"的元素
+    let myDiv = document.querySelector("#myDiv");
+    // 取得类名为"selected"的第一个元素
+    let selected = document.querySelector(".selected");
+    // 取得类名为"button"的图片
+    let img = document.body.querySelector("img.button");
+```
+- querySelectorAll() 返回所有匹配的项，是个NodeList
+- matches() 检查一个元素是否匹配指定的选择器
+### 元素遍历
+Element Traversal API为DOM元素添加了5个属性：
+- childElementCount，返回子元素数量（不包含文本节点和注释）；
+- firstElementChild，指向第一个Element类型的子元素（Element版firstChild）；
+- lastElementChild，指向最后一个Element类型的子元素（Element版lastChild）；
+- previousElementSibling，指向前一个Element类型的同胞元素（Element版previousSibling）；
+- nextElementSibling，指向后一个Element类型的同胞元素（Element版nextSibling）。
+### HTML5
+- getElementsByClassName() 返回一个包含所有类名为className的元素的NodeList
+- classList
+```js
+    // 删除"disabled"类
+    div.classList.remove("disabled");
+    // 添加"current"类
+    div.classList.add("current");
+    // 切换"user"类
+    div.classList.toggle("user");
+    // 检测类名
+    if (div.classList.contains("bd") && ! div.classList.contains("disabled")){
+      // 执行操作
+    )
+    // 迭代类名
+    for (let class of div.classList){
+      doStuff(class);
+    }
+```
+- document.activeElement 返回当前活动元素
+- document.hasFocus() 方法，该方法返回布尔值，表示文档是否拥有焦点
+- document.readyState  loading，表示文档正在加载；complete，表示文档加载完成。
+- document.compatMode 浏览器当前处于什么渲染模式。"CSS1Compat" or "BackCompat"
+- document.head 指向文档的<head>元素
+- document.characterSet = "UTF-8";
+innerHTML:  
+```js
+div.innerHTML = "Hello & welcome, <b>\"reader\"! </b>";
+// 插入div中
+```
+outerHTML：
+```js
+div.innerHTML = "Hello & welcome, <b>\"reader\"! </b>";
+// 替换div
+```
+- scrollIntoView()方法存在于所有HTML元素上  
+alignToTop 窗口滚动后元素的顶部是否与与视口顶部对齐  
+scrollIntoViewOptions behavior：定义过渡动画，可取的值为"smooth"和"auto"，block：定义垂直方向的对齐，可取的值为"start"、"center"、"end"和"nearest"，inline：定义水平方向的对齐，可取的值为"start"、"center"、"end"和"nearest"
+
+### 专有扩展
+- children属性
+- contains()方法
+- innerText属性
+- outerText属性
+- scrollIntoViewIfNeeded()
+
+## 十六、DOM2和DOM3
