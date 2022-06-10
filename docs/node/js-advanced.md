@@ -1574,7 +1574,7 @@ ancelBubble属性与DOM stopPropagation()方法用途一样，都可以阻止事
 #### 跨浏览器事件对象
 
 ### 事件类型
-OM3 Events定义了如下事件类型:
+DOM3 Events定义了如下事件类型:
 - 用户界面事件（UIEvent）：涉及与BOM交互的通用浏览器事件。
 - 焦点事件（FocusEvent）：在元素获得和失去焦点时触发。
 - 鼠标事件（MouseEvent）：使用鼠标在页面上执行某些操作时触发。
@@ -1590,4 +1590,83 @@ OM3 Events定义了如下事件类型:
 - select：在文本框（<input>或textarea）上当用户选择了一个或多个字符时触发。
 - resize：在window或窗格上当窗口或窗格被缩放时触发。
 - scroll：当用户滚动包含滚动条的元素时在元素上触发。<body>元素包含已加载页面的滚动条。
-  
+- unload：在文档卸载完成后触发，可以给body添加一个onunload事件，在页面卸载时执行一些操作。
+- resize：当浏览器窗口被缩放到新高度或宽度时，会触发resize事件。
+#### 焦点事件
+焦点事件在页面元素获得或失去焦点时触发。
+- blur：当元素失去焦点时触发。这个事件不冒泡，所有浏览器都支持。
+- focus：当元素获得焦点时触发。这个事件不冒泡，所有浏览器都支持。
+- focusin：当元素获得焦点时触发。这个事件是focus的冒泡版。
+- focusout：当元素失去焦点时触发。这个事件是blur的通用版。
+当焦点从页面中的一个元素移到另一个元素上时，会依次发生如下事件：
+1. focuscout在失去焦点的元素上触发。
+2. focusin在获得焦点的元素上触发。
+3. blur在失去焦点的元素上触发。
+4. focus在获得焦点的元素上触发。
+#### 鼠标和滚轮事件
+- click：在用户单击鼠标主键（通常是左键）或按键盘回车键时触发。这主要是基于无障碍的考虑，让键盘和鼠标都可以触发onclick事件处理程序。
+- dblclick：在用户双击鼠标主键（通常是左键）时触发。这个事件不是在DOM2 Events中定义的，但得到了很好的支持，DOM3Events将其进行了标准化。
+- mousedown：在用户按下任意鼠标键时触发。这个事件不能通过键盘触发。
+- mouseenter：在用户把鼠标光标从元素外部移到元素内部时触发。这个事件不冒泡，也不会在光标经过后代元素时触发。mouseenter事件不是在DOM2 Events中定义的，而是DOM3Events中新增的事件。
+- mouseleave：在用户把鼠标光标从元素内部移到元素外部时触发。这个事件不冒泡，也不会在光标经过后代元素时触发。mouseleave事件不是在DOM2 Events中定义的，而是DOM3Events中新增的事件。
+- mousemove：在鼠标光标在元素上移动时反复触发。这个事件不能通过键盘触发。
+- mouseout：在用户把鼠标光标从一个元素移到另一个元素上时触发。移到的元素可以是原始元素的外部元素，也可以是原始元素的子元素。这个事件不能通过键盘触发。
+- mouseover：在用户把鼠标光标从元素外部移到元素内部时触发。这个事件不能通过键盘触发。
+- mouseup：在用户释放鼠标键时触发。这个事件不能通过键盘触发。
+- mousewheel：滚轮事件
+除了mouseenter和mouseleave，所有鼠标事件都会冒泡，都可以被取消。  
+click事件依赖mousedown和mouseup，dblclick依赖两次click，任意一个取消，都会导致不触发。    
+DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只有在mouseover和mouseout事件发生时才包含值，其他所有事件的这个属性的值都是null。  
+##### 鼠标坐标
+- 窗口坐标：event对象的clientX和clientY属性中
+- 页面坐标：通过event对象的pageX和pageY可以获取。在页面没有滚动时，pageX和pageY与clientX和clientY的值相同。
+- 屏幕坐标：event对象的screenX和screenY属性获取鼠标光标在屏幕上的坐标。
+##### 修饰键
+Shift、Ctrl、Alt和Meta，事件对象中可以判断这几个键是否按下：shiftKey、ctrlKey、altKey和metaKey。
+##### 鼠标按键
+对mousedown和mouseup事件来说，event对象上会有一个button属性，表示按下或释放的是哪个按键。 
+##### 触摸屏幕
+- 不支持dblclick事件。双击浏览器窗口可以放大，但没有办法覆盖这个行为。
+- 单指点触屏幕上的可点击元素会触发mousemove事件。如果操作会导致内容变化，则不会再触发其他事件。如果屏幕上没有变化，则会相继触发mousedown、mouseup和click事件。点触不可点击的元素不会触发事件。可点击元素是指点击时有默认动作的元素（如链接）或指定了onclick事件处理程序的元素。
+- mousemove事件也会触发mouseover和mouseout事件。
+- 双指点触屏幕并滑动导致页面滚动时会触发mousewheel和scroll事件。
+#### 键盘与输入事件
+键盘事件包含3个事件：
+- keydown：在按键被按下时触发。
+- keypress，用户按下键盘上某个键并产生字符时触发，而且持续按住会重复触发。Esc键也会触发这个事件。DOM3 Events废弃了keypress事件，而推荐textInput事件。
+- keyup，用户释放键盘上某个键时触发。
+输入事件只有一个，即textInput。textInput会在文本被插入到文本框之前触发。  
+如果一个字符键被按住不放，keydown和keypress就会重复触发，直到这个键被释放。 
+::: tip 注意
+键盘事件支持与鼠标事件相同的修饰键。shiftKey、ctrlKey、altKey和metaKey属性在键盘事件中都是可用的。
+:::
+对于keydown和keyup事件，event对象的keyCode属性中会保存一个键码，对应键盘上特定的一个键。  
+event对象上支持charCode属性，只有发生keypress事件时这个属性才会被设置值，包含的是按键字符对应的ASCII编码。可以使用String.fromCharCode()方法将其转换为实际的字符。  
+DOM3 Events规范并未规定charCode属性，而是定义了key和char两个新属性。  
+#### 合成事件
+IME通常需要同时按下多个键才能输入一个字符。合成事件用于检测和控制这种输入。
+#### HTML5事件
+- contextmenu事件：在鼠标右键点击时触发。可以preventDefault()来阻止默认行为，然后添加自己想要的操作。
+- beforeunload事件：给开发者提供阻止页面被卸载的机会。这个事件会向用户显示一个确认框，其中的消息表明浏览器即将卸载页面，并请用户确认是希望关闭页面，还是继续留在页面上。
+```js
+    window.addEventListener("beforeunload", (event) => {
+      let message = "I'm really going to miss you if you go.";
+      event.returnValue = message;
+      return message;
+    });
+```
+- DOMContentLoaded事件：DOM树构建完成后立即触发，而不用等待图片、JavaScript文件、CSS文件或其他资源加载完成。
+- readystatechange事件：
+- pageshow与pagehide事件：其会在页面显示时触发，无论是否来自往返缓存。来自往返缓存persisted为true。
+- hashchange事件：用于在URL散列值（URL最后#后面的部分）发生变化时通知开发者。
+#### 设备事件
+- orientationchange事件：0表示垂直模式，90表示左转水平模式（主屏幕键在右侧）, -90表示右转水平模式（主屏幕键在左）。window.orientation可获取到信息。IOS
+- deviceorientation事件 陀螺仪？
+- devicemotion事件 移动
+#### 触摸事件
+- touchstart事件：触摸屏幕时触发。
+- touchmove：手指在屏幕上滑动时连续触发。在这个事件中调用preventDefault()可以阻止滚动。
+- touchend：手指从屏幕上移开时触发。
+- touchcancel：系统停止跟踪触摸时触发。文档中并未明确什么情况下停止跟踪。
+- touches: Touch对象的数组，表示当前屏幕上的每个触点。
+- 
