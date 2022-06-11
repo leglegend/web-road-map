@@ -1669,4 +1669,482 @@ IME通常需要同时按下多个键才能输入一个字符。合成事件用�
 - touchend：手指从屏幕上移开时触发。
 - touchcancel：系统停止跟踪触摸时触发。文档中并未明确什么情况下停止跟踪。
 - touches: Touch对象的数组，表示当前屏幕上的每个触点。
-- 
+- targetTouches: Touch对象的数组，表示特定于事件目标的触点。
+- changedTouches: Touch对象的数组，表示自上次用户动作之后变化的触点。
+##### 手势事件
+- gesturestart：一个手指已经放在屏幕上，再把另一个手指放到屏幕上时触发。
+- gesturechange：任何一个手指在屏幕上的位置发生变化时触发。
+- gestureend：其中一个手指离开屏幕时触发。
+每个手势事件的event对象都包含所有标准的鼠标事件属性：bubbles、cancelable、view、clientX、clientY、screenX、screenY、detail、altKey、shiftKey、ctrlKey和metaKey。  
+新增的两个event对象属性是rotation和scale。rotation属性表示手指变化旋转的度数，负值表示逆时针旋转，正值表示顺时针旋转（从0开始）。scale属性表示两指之间距离变化（对捏）的程度。开始时为1，然后随着距离增大或缩小相应地增大或缩小。
+#### 事件参考
+一堆图。。。
+### 内存与性能
+在JavaScript中，页面中事件处理程序的数量与页面整体性能直接相关。
+- 每个函数都是对象，都占用内存空间，对象越多，性能越差。
+- 为指定事件处理程序所需访问DOM的次数会先期造成整个页面交互的延迟。 
+#### 事件委托
+事件委托利用事件冒泡，可以只使用一个事件处理程序来管理一种类型的事件。  
+使用事件委托，只要给所有元素共同的祖先节点添加一个事件处理程序，就可以解决问题。 
+事件委托具有如下优点:
+- document对象随时可用，任何时候都可以给它添加事件处理程序（不用等待DOMContentLoaded或load事件）。这意味着只要页面渲染出可点击的元素，就可以无延迟地起作用。
+- 节省花在设置页面事件处理程序上的时间。只指定一个事件处理程序既可以节省DOM引用，也可以节省时间。
+- 减少整个页面所需的内存，提升整体性能。
+##### 删除事件处理程序
+事件处理程序越多，页面性能就越差。应该及时删除不用的事件处理程序。
+1. 删除带有事件处理程序的元素，removeChild()或replaceChild()删除节点。innerHTML需要手动删除程序。
+2. 在onunload事件处理程序中趁页面尚未卸载先删除所有事件处理程序。
+
+### 模拟事件
+#### DOM事件模拟
+使用document.createEvent(event:string)方法创建一个event对象。  
+- "UIEvents"（DOM3中是"UIEvent"）：通用用户界面事件（鼠标事件和键盘事件都继承自这个事件）。
+- "MouseEvents"（DOM3中是"MouseEvent"）：通用鼠标事件。
+- "HTMLEvents"（DOM3中没有）：通用HTML事件（HTML事件已经分散到了其他事件大类中）。
+创建event对象-》初始化-》使用dispatchEvent()触发调用-》冒泡并触发事件处理程序执行
+**模拟鼠标事件：**    
+createEvent("MouseEvents")会返回一个event对象，对象有一个initMouseEvent()方法，接收很多参数。
+```js
+    let btn = document.getElementById("myBtn");
+    // 创建event对象
+    let event = document.createEvent("MouseEvents");
+    // 初始化event对象
+    // 要触发的事件类型、表示事件是否冒泡、表示事件是否可以取消、与事件关联的视图
+    event.initMouseEvent("click", true, true, document.defaultView,
+                          0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    // 触发事件
+    btn.dispatchEvent(event);
+```
+**模拟键盘事件：**   
+ createEvent("KeyboardEvent")会返回一个event对象，对象有一个initKeyboardEvent()方法。很多参数。。。
+**模拟其他事件：**     
+```js
+    let event = document.createEvent("HTMLEvents");
+    event.initEvent("focus", true, false);
+    target.dispatchEvent(event);
+```
+**自定义DOM事件：**     
+createEvent("CustomEvent")。返回的对象包含initCustomEvent()方法，该方法接收以下4个参数。 
+- type（字符串）：要触发的事件类型，如"myevent"。
+- bubbles（布尔值）：表示事件是否冒泡。
+- cancelable（布尔值）：表示事件是否可以取消。
+- detail（对象）：任意值。作为event对象的detail属性。
+自定义事件可以像其他事件一样在DOM中派发，比如：
+```js
+    let div = document.getElementById("myDiv");
+    div.addEventListener("myevent", (event) => {
+      console.log("DIV: " + event.detail);
+    });
+    document.addEventListener("myevent", (event) => {
+      console.log("DOCUMENT: " + event.detail);
+    });
+    if (document.implementation.hasFeature("CustomEvents", "3.0")) {
+      event = document.createEvent("CustomEvent");
+      event.initCustomEvent("myevent", true, false, "Hello world! ");
+      div.dispatchEvent(event);
+    }
+```
+**IE事件模拟：**   
+考虑兼容性的话可以看看。。
+
+## 十八、动画与Canvas图形
+### 使用requestAnimationFrame
+早期动画通过setInterval()和setTimeout()实现，但是时间不精准。  
+#### requestAnimationFrame
+requestAnimationFrame(fn,TimeStamp)
+```js
+    function updateProgress() {
+      var div = document.getElementById("status");
+      div.style.width = (parseInt(div.style.width, 10) + 5) + "%";
+      if (div.style.left ! = "100%") {
+      requestAnimationFrame(updateProgress);
+      }
+    }
+    requestAnimationFrame(updateProgress);
+```
+#### cancelAnimationFrame
+#### 通过requestAnimationFrame节流
+
+### 基本的画布功能
+出现在开始和结束标签之间的内容是后备数据，会在浏览器不支持<canvas>元素时显示。
+```html
+<canvas id="drawing" width="200" height="200">A drawing of something.</canvas>
+```
+width和height属性也可以在DOM节点上设置，因此可以随时修改。整个元素还可以通过CSS添加样式，并且元素在添加样式或实际绘制内容前是不可见的。  
+要在画布上绘制图形，首先要取得绘图上下文。  
+```js
+    let drawing = document.getElementById("drawing");
+    // 确保浏览器支持<canvas>
+    if (drawing.getContext) {
+      let context = drawing.getContext("2d");
+      // 其他代码
+    }
+    drawing.toDataURL('image/png') // 导出一张PNG格式的图片
+```
+### 2D绘图上下文
+2D上下文的坐标原点(0, 0)在<canvas>元素的左上角。所有坐标值都相对于该点计算，因此x坐标向右增长，y坐标向下增长。默认情况下，width和height表示两个方向上像素的最大值。  
+**1. 填充和描边**  
+填充以指定样式（颜色、渐变或图像）自动填充形状，而描边只为图形边界着色。  
+- 填充: fillStyle 字符串、渐变对象或图案对象CSS颜色值
+- 描边: strokeStyle 字符串、渐变对象或图案对象CSS颜色值
+```js
+    let drawing = document.getElementById("drawing");
+    // 确保浏览器支持<canvas>
+    if (drawing.getContext) {
+      let context = drawing.getContext("2d");
+      context.strokeStyle = "red";
+      context.fillStyle = "#0000ff";
+    }
+```
+**2. 绘制矩形**   
+矩形是唯一一个可以直接在2D绘图上下文中绘制的形状。
+- fillRect(x,y,width,height)方法用于以指定颜色在画布上绘制并填充矩形。填充的颜色使用fillStyle属性指定。
+- strokeRect(x,y,width,height)方法使用通过strokeStyle属性指定的颜色绘制矩形轮廓。
+- lineWidth 描边宽度
+- lineCap 线条端点的形状 ［"butt"（平头）、"round"（出圆头）或"square"（出方头）］
+- lineJoin 线条交点的形状［"round"（圆转）、"bevel"（取平）或"miter"（出尖）］
+- clearRect() 擦除画布中某个区域用于把绘图上下文中的某个区域变透明。通过先绘制形状再擦除指定区域。 
+
+**3. 绘制路径**  
+必须首先调用beginPath()方法以表示要开始绘制新路径。然后，再调用下列方法来绘制路径。  
+- arc(x, y, radius, startAngle, endAngle, counterclockwise)：以坐标(x, y)为圆心，以radius为半径绘制一条弧线，起始角度为startAngle，结束角度为endAngle（都是弧度）。最后一个参数counterclockwise表示是否逆时针计算起始角度和结束角度（默认为顺时针）。
+- arcTo(x1, y1, x2, y2, radius)：以给定半径radius，经由(x1, y1)绘制一条从上一点到(x2, y2)的弧线。
+- bezierCurveTo(c1x, c1y, c2x, c2y, x, y)：以(c1x, c1y)和(c2x,c2y)为控制点，绘制一条从上一点到(x, y)的弧线（三次贝塞尔曲线）。
+- lineTo(x, y)：绘制一条从上一点到(x, y)的直线。
+- moveTo(x, y)：不绘制线条，只把绘制光标移动到(x, y)。
+- quadraticCurveTo(cx, cy, x, y)：以(cx, cy)为控制点，绘制一条从上一点到(x, y)的弧线（二次贝塞尔曲线）。
+- rect(x, y, width, height)：以给定宽度和高度在坐标点(x, y)绘制一个矩形。这个方法与strokeRect()和fillRect()的区别在于，它创建的是一条路径，而不是独立的图形。
+创建路径之后,可用closePath()方法绘制一条返回起点的线。fillStyle属性并调用fill()方法来填充路径，也可以指定strokeStyle属性并调用stroke()方法来描画路径，还可以调用clip()方法基于已有路径创建一个新剪切区域。  
+- isPointInPath(x,y) 确定点是否在路径上
+**4. 绘制文本**  
+fillText()和strokeText()，4个参数：要绘制的字符串、x坐标、y坐标和可选的最大像素宽度。  
+- font：以CSS语法指定的字体样式、大小、字体族等，比如"10pxArial"。
+- textAlign：指定文本的对齐方式，可能的值包括"start"、"end"、"left"、"right"和"center"。推荐使用"start"和"end"，不使用"left"和"right"，因为前者无论在从左到右书写的语言还是从右到左书写的语言中含义都更明确。
+- textBaseLine：指定文本的基线，可能的值包括"top"、"hanging"、"middle"、"alphabetic"、"ideographic"和"bottom"。
+- measureText(text) 返回text的width 
+**5. 变换**  
+改变绘制上下文的变换矩阵。
+- rotate(angle)：围绕原点把图像旋转angle弧度。
+- scale(scaleX, scaleY)：通过在x轴乘以scaleX、在y轴乘以scaleY来缩放图像。scaleX和scaleY的默认值都是1.0。
+- translate(x, y)：把原点移动到(x, y)。执行这个操作后，坐标(0,0)就会变成(x, y)。
+- transform(m1_1, m1_2, m2_1, m2_2, dx, dy)：像下面这样通过矩阵乘法直接修改矩阵。
+- setTransform(m1_1, m1_2, m2_1, m2_2, dx, dy)：把矩阵重置为默认值，再以传入的参数调用transform()。
+- save() 调用这个方法后，所有这一时刻的设置会被放到一个暂存栈中。
+- restore() 这个方法会从暂存栈中取出并恢复之前保存的设置。
+save()方法只保存应用到绘图上下文的设置和变换，不保存绘图上下文的内容。
+**6. 绘制图像**  
+- drawImage(image/canvas,x,y,width,height)
+```js
+    let image = document.images[0];
+    context.drawImage(image, 10, 10);
+```
+还可以绘制一部分到画布上：  
+drawImage(image,x,y,width,height,img-x,img-y,img-width,img-height)
+
+**7. 阴影**  
+- shadowColor: CSS颜色值，表示要绘制的阴影颜色，默认为黑色。
+- shadowOffsetX：阴影相对于形状或路径的x坐标的偏移量，默认为0。
+- shadowOffsetY：阴影相对于形状或路径的y坐标的偏移量，默认为0。
+- shadowBlur：像素，表示阴影的模糊量。默认值为0，表示不模糊。
+
+**8. 渐变**  
+线性渐变：createLinearGradient(起点xy，终点xy)
+```js
+    let gradient = context.createLinearGradient(30, 30, 70, 70);
+    gradient.addColorStop(0, "white");
+    gradient.addColorStop(1, "black");
+    // 绘制红色矩形
+    context.fillStyle = "#ff0000";
+    context.fillRect(10, 10, 50, 50);
+    // 绘制渐变矩形
+    context.fillStyle = gradient
+    context.fillRect(30, 30, 50, 50);
+```
+放射渐变：createRadialGradient(起点xyr，终点xyr)
+**9. 图案**  
+createPattern(img,string) 第二个参数的值与CSS的background-repeat属性是一样的，包括"repeat"、"repeat-x"、"repeat-y"和"no-repeat"。
+
+**10. 图像数据**  
+getImageData(x,y,width,height)要从(x, y)开始取得width像素宽、height像素高的区域对应的数据。  
+
+**11. 合成**  
+globalAlpha属性：透明度 0-1  
+globalCompositionOperation属性表示新绘制的形状如何与上下文中已有的形状融合。  
+有很多选项，用到的时候可以查。 
+
+### WebGL
+WebGL是画布的3D上下文。  
+```js
+document.getElementById('cavans').getContext('webgl')
+```
+## 十九、表单脚本
+### 表单基础
+表单在HTML中以<form>元素表示，在JavaScript中则以HTMLFormElement类型表示。  
+```js
+    let form = document.getElementById("form1");
+    // 取得页面中的第一个表单
+    let firstForm = document.forms[0];
+    // 取得名字为"form2"的表单
+    let myForm = document.forms["form2"];
+```
+#### 提交表单
+```html
+    <!-- 通用提交按钮 -->
+    <input type="submit" value="Submit Form">
+    <!-- 自定义提交按钮 -->
+    <button type="submit">Submit Form</button>
+    <!-- 图片按钮 -->
+    <input type="image" src="graphic.gif">
+```
+如果表单中有上述任何一个按钮，且焦点在表单中某个控件上，则按回车键也可以提交表单。  
+也可以直接通过js提交
+```js
+    let form = document.getElementById("myForm");
+    //提交表单
+    form.submit()
+```
+#### 重置表单
+```html
+    <!-- 通用重置按钮 -->
+    <input type="reset" value="Reset Form">
+    <!-- 自定义重置按钮 -->
+    <button type="reset">Reset Form</button>
+```
+也可以直接通过js重制
+#### 表单字段
+所有表单元素都是表单elements属性（元素集合）中包含的一个值，可以通过索引位置和name属性来访问。
+```js
+    let form = document.getElementById("form1");
+    // 取得表单中的第一个字段
+    let field1 = form.elements[0];
+    // 取得表单中名为"textbox1"的字段
+    let field2 = form.elements["textbox1"];
+    // 取得字段的数量
+    let fieldCount = form.elements.length;
+```
+- 表单字段的公共属性：disabled、form、name、readOnly、tabIndex、 type、value
+- 表单字段的公共方法：focus()和blur()，HTML5为表单字段增加了autofocus属性，支持的浏览器会自动为带有该属性的元素设置焦点。
+- 表单字段的公共事件：blur、change、focus
+### 文本框编程
+单行文本input，多行文本textarea。
+**input**  
+- size：文本框宽度，以字符数衡量
+- value：文本框初始值
+- maxLength：最多字符数
+**textarea**  
+- rows：文本框高度，以字符数衡量
+- cols：文本框宽度，类似于<input>元素的size属性
+- 与<input>不同的是，<textarea>的初始值必须包含在<textarea>和</textarea>之间
+#### 选择文本
+select()方法，用于全部选中文本框中的文本。  
+select事件，select事件会在用户选择完文本后立即触发。
+```js
+    function getSelectedText(textbox){
+      return textbox.value.substring(textbox.selectionStart,
+                                      textbox.selectionEnd);
+    }
+```
+setSelectionRange(begin,end)  选择部分文本。  
+#### 输入过滤
+有些输入框需要出现或不出现特定字符，可以通过阻止keypress的默认行为来屏蔽非数字字符。
+处理剪贴板：beforecopy、copy、beforecut、cut、beforepaste、paste  
+剪贴板上的数据可以通过window对象（IE）或event对象（Firefox、Safari和Chrome）上的clipboardData对象来获取。clipboardData对象上有3个方法：getData()、setData()和clearData()。  
+#### 自动切换
+通过focus实现
+#### HTML5约束验证API
+- required 必填
+- type值增加"email"和"url"
+- 输入元素 "number"、"range"、"datetime"、"datetime-local"、"date"、"month"、"week"和"time"
+- min max step(步长)
+- stepUp()和stepDown() 要从当前值加上或减去的数值。
+- pattern 用于指定一个正则表达式
+- checkValidity() 检查字段是否有效
+- validity属性 返回一系列布尔值，检查每一个条件
+- novalidate禁用验证 js中可以使用noValidate
+- formnovalidate/formNoValidate 整个form禁用验证
+
+### 选择框编程
+选择框是使用<select>和<option>元素创建的。
+- add(newOption, relOption)：在relOption之前向控件中添加新的<option>。
+- multiple：布尔值，表示是否允许多选，等价于HTML的multiple属性。
+- options：控件中所有<option>元素的HTMLCollection。
+- remove(index)：移除给定位置的选项。
+- selectedIndex：选中项基于0的索引值，如果没有选中项则为-1。对于允许多选的列表，始终是第一个选项的索引。
+- size：选择框中可见的行数，等价于HTML的size属性。
+<option>元素存在以下属性：
+- index：选项在options集合中的索引。
+- label：选项的标签，等价于HTML的label属性。
+- selected：布尔值，表示是否选中了当前选项。把这个属性设置为true会选中当前选项。
+- text：选项的文本。
+- value：选项的值（等价于HTML的value属性）。
+
+### 表单序列化
+### 富文本编辑
+
+## 二十、JavaScriptAPI
+### Atomics与SharedArrayBuffer
+看完27再回来看这个
+### 跨上下文消息
+跨文档消息(XDM)，是一种在不同执行上下文（如不同工作线程或不同源的页面）间传递信息的能力。  
+XDM的核心是postMessage()方法。把数据传送到另一个位置。  
+postMessage()方法接收3个参数：消息、表示目标接收源的字符串和可选的可传输对象的数组。  
+接收到XDM消息后，window对象上会触发message事件，event包含下面三个信息：
+- data：作为第一个参数传递给postMessage()的字符串数据。
+- origin：发送消息的文档源，例如"http://www.wrox.com"。
+- source：发送消息的文档中window对象的代理。这个代理对象主要用于在发送上一条消息的窗口中执行postMessage()方法。如果发送窗口有相同的源，那么这个对象应该就是window对象。
+### Encoding API
+Encoding API主要用于实现字符串与定型数组之间的转换。
+### File API与Blob API
+File API与Blob API是为了让Web开发者能以安全的方式访问客户端机器上的文件，从而更好地与这些文件交互而设计的。
+### 媒体元素
+迫使用Flash以便达到最佳的跨浏览器兼容性。HTML5新增了两个与媒体相关的元素，即<audio>和<video>，从而为浏览器提供了嵌入音频和视频的统一解决方案。  
+### 原生拖放
+在某个元素被拖动时，会（按顺序）触发以下事件：
+1. dragstart
+2. drag
+3. dragend
+在把元素拖动到一个有效的放置目标上时，会依次触发以下事件：  
+1. dragenter
+2. dragover
+3. dragleave或drop
+dropEffect属性可以告诉浏览器允许哪种放置行为。这个属性有以下4种可能的值：
+- "none"：被拖动元素不能放到这里。这是除文本框之外所有元素的默认值。
+- "move"：被拖动元素应该移动到放置目标。
+- "copy"：被拖动元素应该复制到放置目标。
+- "link"：表示放置目标会导航到被拖动元素（仅在它是URL的情况下）。
+
+
+HTML5在所有HTML元素上规定了一个draggable属性，表示元素是否可以拖动。  
+
+### Notifications API
+Notifications API用于向用户显示通知。  
+页面可以使用全局对象Notification向用户请求通知权限。这个对象有一个requestPemission()方法，该方法返回一个期约，用户在授权对话框上执行操作后这个期约会解决。  
+```js
+    new Notification('Title text! ',{
+      body: 'text',
+      image: 'image',
+      vibrate: true
+    });
+```
+close()方法可以关闭显示的通知。  
+通知生命周期回调: 
+- onshow在通知显示时触发；
+- onclick在通知被点击时触发；
+- onclose在通知消失或通过close()关闭时触发；
+- onerror在发生错误阻止通知显示时触发。
+
+### Page Visibility API
+Page Visibility API旨在为开发者提供页面对用户是否可见的信息。
+- document.visibilityState:"hidden"/"visible"/"prerender"
+- visibilitychange事件 显示状态发生变化触发  
+- document.hidden 页面是否隐藏
+
+### Streams API
+大块数据可能需要分小部分处理。 
+#### 流
+Stream API定义了三种流：
+**可读流**：可以通过某个公共接口读取数据块的流。数据在内部从底层源进入流，然后由消费者（consumer）进行处理。  
+**可写流**：可以通过某个公共接口写入数据块的流。生产者（producer）将数据写入流，数据在内部传入底层数据槽（sink）。  
+**转换流**：由两种流组成，可写流用于接收数据（可写端），可读流用于输出数据（可读端）。这两个流之间是转换程序（transformer），可以根据需要检查和修改流内容。  
+流的基本单位是块。
+- 可读流
+```js
+let array = [1, 2, 3, 4, 5]
+const readableStream = new ReadableStream({
+  start(controller) {
+    for (let chunk of array) {
+      controller.enqueue(chunk)
+    }
+    controller.close()
+  }
+})
+const readableStreamDefaultReader = readableStream.getReader()
+for (let i = 0; i < 5; i++) {
+  readableStreamDefaultReader.read().then(console.log)
+}
+// 1 2 3 4 5
+```
+- 可写流
+```js
+const writableStream = new WritableStream({
+  write(value) {
+    console.log(value)
+  }
+})
+const writableStreamDefaultWriter = writableStream.getWriter()     
+writableStreamDefaultWriter.write(1)
+writableStreamDefaultWriter.close()
+```
+- 转换流
+```js
+  const { writable, readable } = new TransformStream({
+    transform(chunk, controller) {
+      controller.enqueue(chunk * 2)
+    }
+  })
+  const readableStreamDefaultReader = readable.getReader()
+  const writableStreamDefaultWriter = writable.getWriter()
+```
+#### 通过管道连接流
+使用pipeThrough()方法把ReadableStream接入TransformStream。  
+```js
+const readableStream = new ReadableStream({
+  start(controller) {
+    controller.enqueue(1)
+    controller.close()
+  }
+})
+const transformStream = new TransformStream({
+  transform(chunk, controller) {
+    controller.enqueue(chunk * 2)
+  }
+})
+// 通过管道连接流
+const pipedStream = readableStream.pipeThrough(transformStream)
+// 从连接流的输出获得读取器
+const pipedStreamDefaultReader = pipedStream.getReader()
+console.log(pipedStreamDefaultReader.read())
+```
+pipeTo()方法也可以将ReadableStream连接到WritableStream。
+```js
+const readableStream = new ReadableStream({
+  start(controller) {
+    controller.enqueue(1)
+    ontroller.close()
+  }
+})
+const writableStream = new WritableStream({
+  write(value) {
+    console.log(value)
+  }
+})
+const pipeStream = readableStream.pipeTo(writableStream)
+```
+### 计时API
+- window.performance.now() 这个方法返回一个微秒精度的浮点值。
+- window.performance.timeOrigin 属性返回计时器初始化时全局系统时钟的值。
+1. User Timing API用于记录和分析自定义性能条目。  
+2. Navigation Timing API提供了高精度时间戳，用于度量当前页面加载速度。
+3. Resource Timing API提供了高精度时间戳，用于度量当前页面加载时请求资源的速度。  
+### Web组件
+#### HTML模板
+template标签的内容不属于活动文档，标签中的内容不会被渲染到页面上。而是存在于一个包含在HTML模板中的DocumentFragment节点内。DocumentFragment也是批量向HTML中添加元素的高效工具，可以给DocumentFragment添加完所有子节点，再一次性放入HTML中。  
+如果想要复制模板，可以使用importNode()方法克隆DocumentFragment。  
+```html
+<body>
+  <div id="foo">222</div>
+  <template id="bar">
+    <div>121212</div>
+  </template>
+</body>
+<script>
+  const fooElement = document.querySelector('#foo')
+  const barTemplate = document.querySelector('#bar')
+  const barFragment = barTemplate.content
+  fooElement.appendChild(barFragment)
+</script>
+```
+#### 影子DOM
+影子DOM的内容会实际渲染到页面上，而HTML模板的内容不会。
+
+
