@@ -2145,6 +2145,232 @@ template标签的内容不属于活动文档，标签中的内容不会被渲染
 </script>
 ```
 #### 影子DOM
-影子DOM的内容会实际渲染到页面上，而HTML模板的内容不会。
+影子DOM是通过attachShadow()方法创建并添加给有效HTML元素的。  
+影子DOM的内容会实际渲染到页面上，而HTML模板的内容不会。CSS样式和CSS选择符可以限制在影子DOM子树而不是整个顶级DOM树中。  
+通过slot标签可以用来放置原来的html：
+```html
+<div id="foo">
+  <p>Foo</p>
+</div>
+<script>
+  document
+    .querySelector('div')
+    .attachShadow({ mode: 'open' })
+    .innerHTML = `
+    <div id="bar">
+      <slot></slot> 
+    </div>             
+    `
+</script>
+```
+上面是默认槽位的例子，还可以使用命名槽位实现多个投射，通过匹配的slot/name属性对实现。
+```html
+<body>
+  <div id="foo">
+    <p slot="foo">Foo</p>
+  </div>
+  <template id="bar">
+    <slot name="foo"></slot>
+  </template>
+</body>
+<script>
+  let foo = document.querySelector('#foo')
+  let bar = document.querySelector('#bar')
+  foo.attachShadow({ mode: 'open' }).innerHTML = bar.innerHTML
+</script>
+```
+### 自定义元素
+调用customElements.define()方法可以创建自定义元素。 
+```js
+class CustomElement extends HTMLElement {
+  constructor() {
+    super()
+    console.log(1212)
+  }
+}
+customElements.define('custom-tag',CustomElement)
+<custom-tag></custom-tag> // 1212
+```
+如果自定义元素继承了一个元素类，那么可以使用is属性和extends选项将标签指定为该自定义元素的实例：
+```js
+class CustomElement extends HTMLDivElement {
+  constructor() {
+    super()
+    console.log(1212)
+  }
+}
+customElements.define('custom-tag',CustomElement,{extends:'div'})
+<div is="custom-tag"></div> // 1212
+```
+每次将自定义元素添加到DOM中都会调用其类构造函数，所以很容易自动给自定义元素添加子DOM内容:
+```js
+class CustomElement extends HTMElement {
+  constructor() {
+    super()
+    this.attachShadow({ mode: 'open' })
+    this.shadowRoot.innerHTML = `
+      <p>hello</p>
+    `
+    // 如果自定义元素内部有插槽，可以使用appendChild防止innerHTML覆盖插槽
+  }
+}
+```
+**自定义元素的声明周期：**    
+- constructor()：在创建元素实例或将已有DOM元素升级为自定义元素时调用。
+- connectedCallback()：在每次将这个自定义元素实例添加到DOM中时调用。
+- disconnectedCallback()：在每次将这个自定义元素实例从DOM中移除时调用。
+- attributeChangedCallback()：在每次可观察属性的值发生变化时调用。在元素实例初始化时，初始值的定义也算一次变化。
+- adoptedCallback()：在通过document.adoptNode()将这个自定义元素实例移动到新文档对象时调用。
+**反射自定义元素属性：**  
+修改DOM和js对象应该能够互相反射。
+```js
+  class CustomElement extends HTMLElement {
+    static get observedAttributes() {
+      console.log(1212)
+      return ['attr']
+    }
+    get attr() {
+      return this.getAttribute('attr')
+    }
+    set attr(value) {
+      this.setAttribute('attr', value)
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (newValue == oldValue) return
+      this[name] = newValue
+    }
+  }
+  customElements.define('custom-tag', CustomElement)
+  let custom = document.createElement('custom-tag')
+  document.body.appendChild(custom)
+  custom.setAttribute('attr', false)
+```
+如果自定义元素已经有定义，那么CustomElementRegistry.get()方法会返回相应自定义元素的类。类似地，CustomElementRegistry.whenDefined()方法会返回一个期约，当相应自定义元素有定义之后解决。如果想在元素连接到DOM之前强制升级，可以使用CustomElementRegistry.upgrade()方法。  
+### Web Cryptography API
+#### 生成随机数
+Math.random()是伪随机数生成器（PRNG），用于快速计算看起来随机的值，不适合加密。  
+密码学安全伪随机数生成器（CSPRNG），crypto.getRandomValues()
+```js
+const array = new Uint8Array(2)
+console.log(crypto.getRandomValues(array))
+```
+#### 使用SubtleCrypto对象
+crypto.subtle包含一组方法，用于执行常见的密码学功能，如加密、散列、签名和生成密钥。因为所有密码学操作都在原始二进制数据上执行，所以SubtleCrypto的每个方法都要用到ArrayBuffer和ArrayBufferView类型。
+以后可以看看。。。
+
+## 二十一、错误处理与调试
+### 错误处理
+#### try/catch语句
+```js
+    try {
+      // 可能出错的代码
+    } catch (error) {
+      // 出错时要做什么
+    } finally {
+
+    }
+```
+try/catch语句中可选的finally子句始终运行。
+**错误类型：**ECMA-262定义了以下8种错误类型：  
+1. Error是基类型，其他错误类型继承该类型。主要用于开发者抛出自定义错误。
+2. InternalError类型的错误会在底层JavaScript引擎抛出异常时由浏览器抛出。例如，递归过多导致了栈溢出。  
+3. EvalError类型的错误会在使用eval()函数发生异常时抛出。
+4. RangeError错误会在数值越界时抛出。
+5. ReferenceError会在找不到对象时发生。
+6. SyntaxError经常在给eval()传入的字符串包含JavaScript语法错误时发生。
+7. TypeError在JavaScript中很常见，主要发生在变量不是预期类型，或者访问不存在的方法时。
+8. URIError，只会在使用encodeURI()或decodeURI()但传入了格式错误的URI时发生。
+
+#### 抛出错误
+```js
+    throw 12345;
+    throw "Hello world! ";
+    throw true;
+    throw { name: "JavaScript" };
+    throw new Error("Something bad happened.");
+    throw new SyntaxError("I don't like your syntax.");
+    throw new InternalError("I can't do that, Dave.");
+    throw new TypeError("What type of variable do you take me for? ");
+    throw new RangeError("Sorry, you just don't have the range.");
+    throw new EvalError("That doesn't evaluate.");
+    throw new URIError("Uri, is that you? ");
+    throw new ReferenceError("You didn't cite your references properly.");
+```
+使用throw操作符时，代码立即停止执行，除非try/catch语句捕获了抛出的值。通过继承Error可以创建自定义错误类型：
+```js
+    class CustomError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "CustomError";
+        this.message = message;
+      }
+    }
+    throw new CustomError("My message");
+```
+#### error事件
+任何没有被try/catch语句处理的错误都会在window对象上触发error事件。
+```js 
+    window.onerror = (message, url, line) => {
+      console.log(message);
+      return false // 不会抛出错误
+    };
+```
+#### 识别错误
+- 类型转换错误
+- 数据类型错误
+- 通信错误
+##### 静态代码分析器
+静态代码分析器要求使用类型、函数签名及其他指令来注解JavaScript，以此描述程序如何在基本可执行代码之外运行。分析器会比较注解和JavaScript代码的各个部分，对在实际运行时可能出现的潜在不兼容问题给出提醒。
+
+### 调试技术
+#### 把消息记录到控制台
+console有如下方法：
+- error（message）：在控制台中记录错误消息。
+- info（message）：在控制台中记录信息性内容。
+- log（message）：在控制台记录常规消息。
+-  warn（message）：在控制台中记录警告消息。
+#### 理解控制台运行时
+在开发者工具的Element（元素）标签页内，单击DOM树中一个节点，就可以在Console（控制台）标签页中使用$0引用该节点的JavaScript实例。
+#### 使用JavaScript调试器
+debugger关键字，用于调用可能存在的调试功能。
+
+### 旧版IE的常见错误
+- 无效字符：在检测到JavaScript文件中存在无效字符时，IE会抛出"invalidcharacter"错误。
+- 未找到成员：
+- 未知运行时错误：
+- 语法错误
+- 系统找不到指定资源
+
+## 二十二、处理XML
+
+## 二十三、JSON
+JavaScript对象简谱（JSON, JavaScript Object Notation）
+### 语法
+JSON语法支持表示3种类型的值。
+- 简单值：字符串、数值、布尔值和null可以在JSON中出现，就像在JavaScript中一样。特殊值undefined不可以。
+- 对象：第一种复杂数据类型，对象表示有序键/值对。每个值可以是简单值，也可以是复杂类型。
+- 数组：第二种复杂数据类型，数组表示可以通过数值索引访问的值的有序列表。数组的值可以是任意类型，包括简单值、对象，甚至其他数组。
+JSON中的对象必须使用双引号把属性名包围起来。  
+### 解析与序列化
+- JSON.stringify(json,['name','key']/function,space)  
+第一个参数是要序列化的对象，第二个参数是一个数组，传入要序列化的属性。第二个参数也可以是一个函数，函数接收key和value两个参数，可以返回修改后的值。第三个参数控制缩进和空格，传入int表示缩进的空格数，还可以传换行符，传入字符串将使用这个字符串来缩进。  
+在对象中实现toJSON方法并返回一个值，可以代替JSON.stringify()的结果。  
+- JSON.parse(string,function)  
+第一个参数传入要解析的字符串，第二个参数是替代函数，函数接收key/value，返回值将替换value，如果还原函数返回undefined，则结果中就会删除相应的键。
+
+## 二十四、网络请求与远程资源
+Ajax（Asynchronous JavaScript and XML，即异步JavaScript加XML）的技术。  
+把Ajax推到历史舞台上的关键技术是XMLHttpRequest（XHR）对象。  
+### XMLHttpRequest对象
+```js
+let xhr = new XMLHttpRequest()
+xhr.open('get',url,false)
+xhr.send(body)
+```
+open()方法接收三个参数，请求方式，url还有是否异步。  
+::: tip 注意
+只能访问同源URL，也就是域名相同、端口相同、协议相同。如果请求的URL与发送请求的页面在任何方面有所不同，则会抛出安全错误。
+:::
+send方法接收一个参数，是作为请求体发送的数据。  
 
 
