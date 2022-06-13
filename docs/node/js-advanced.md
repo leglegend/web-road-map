@@ -1212,7 +1212,7 @@ history对象表示当前窗口首次使用以来用户的导航历史记录。
 ### 节点层级
 任何HTML或XML文档都可以用DOM表示为一个由节点构成的层级结构。  
 document节点表示每个文档的根节点。  
-根节点的唯一子节点是<html>元素，我们称之为文档元素（documentElement）。  
+根节点的唯一子节点是html元素，我们称之为文档元素（documentElement）。  
 ```html
 Document
   Element <html>
@@ -1260,8 +1260,8 @@ cloneNode(boolean)，会返回与调用它的节点一模一样的节点，传�
 - parentNode值为null；
 - ownerDocument值为null；
 - 子节点可以是DocumentType（最多一个）、Element（最多一个）、ProcessingInstruction或Comment类型。
-- document.documentElement属性返回文档的根元素，即<html>标签。
-- document.body 属性返回文档的body元素，即<body>标签。
+- document.documentElement属性返回文档的根元素，即html标签。
+- document.body 属性返回文档的body元素，即body标签。
 - document.doctype 属性返回文档的doctype，即<!DOCTYPE>标签。
 - document.title 当前页面的标题，可修改
 - document.URL 当前页面的URL
@@ -1269,10 +1269,10 @@ cloneNode(boolean)，会返回与调用它的节点一模一样的节点，传�
 - document.getElementById(id) 
 - document.getElementsByTagName(img) 返回数组，所有img，可传入*，返回所有元素。
 - document.getElementsByName(name) 通过元素的name属性，返回数组
-- document.anchors包含文档中所有带name属性的<a>元素。
-- document.forms包含文档中所有<form>元素（与document.getElementsByTagName ("form")返回的结果相同）。
-- document.images包含文档中所有<img>元素（与document.getElementsByTagName ("img")返回的结果相同）。
-- document.links包含文档中所有带href属性的<a>元素。
+- document.anchors包含文档中所有带name属性的a元素。
+- document.forms包含文档中所有form元素（与document.getElementsByTagName ("form")返回的结果相同）。
+- document.images包含文档中所有img元素（与document.getElementsByTagName ("img")返回的结果相同）。
+- document.links包含文档中所有带href属性的a元素。
 
 ### Element类型
 Element表示XML或HTML元素，对外暴露出访问元素标签名、子节点和属性的能力。Element类型的节点具有以下特征：
@@ -1438,7 +1438,7 @@ Element Traversal API为DOM元素添加了5个属性：
 - document.hasFocus() 方法，该方法返回布尔值，表示文档是否拥有焦点
 - document.readyState  loading，表示文档正在加载；complete，表示文档加载完成。
 - document.compatMode 浏览器当前处于什么渲染模式。"CSS1Compat" or "BackCompat"
-- document.head 指向文档的<head>元素
+- document.head 指向文档的head元素
 - document.characterSet = "UTF-8";
 innerHTML:  
 ```js
@@ -1462,7 +1462,7 @@ scrollIntoViewOptions behavior：定义过渡动画，可取的值为"smooth"和
 - scrollIntoViewIfNeeded()
 
 ## 十六、DOM2和DOM3
-HTML中的样式有3种定义方式：外部样式表（通过<link>元素）、文档样式表（使用<style>元素）和元素特定样式（使用style属性）。  
+HTML中的样式有3种定义方式：外部样式表（通过link元素）、文档样式表（使用style元素）和元素特定样式（使用style属性）。  
 通过DOM修改样式：
 ```js
     let myDiv = document.getElementById("myDiv");
@@ -1583,13 +1583,13 @@ DOM3 Events定义了如下事件类型:
 - 键盘事件（KeyboardEvent）：使用键盘在页面上执行某些操作时触发。
 - 合成事件（CompositionEvent）：在使用某种IME（InputMethod Editor，输入法编辑器）输入字符时触发。
 #### 用户界面事件
-- load：在window上当页面加载完成后触发，在窗套（<frameset>）上当所有窗格（<frame>）都加载完成后触发，在<img>元素上当图片加载完成后触发，在<object>元素上当相应对象加载完成后触发。
-- unload：在window上当页面完全卸载后触发，在窗套上当所有窗格都卸载完成后触发，在<object>元素上当相应对象卸载完成后触发。
-- abort：在<object>元素上当相应对象加载完成前被用户提前终止下载时触发。
-- error：在window上当JavaScript报错时触发，在<img>元素上当无法加载指定图片时触发，在<object>元素上当无法加载相应对象时触发，在窗套上当一个或多个窗格无法完成加载时触发。
-- select：在文本框（<input>或textarea）上当用户选择了一个或多个字符时触发。
+- load：在window上当页面加载完成后触发，在窗套（frameset）上当所有窗格（frame）都加载完成后触发，在img元素上当图片加载完成后触发，在object元素上当相应对象加载完成后触发。
+- unload：在window上当页面完全卸载后触发，在窗套上当所有窗格都卸载完成后触发，在object元素上当相应对象卸载完成后触发。
+- abort：在object元素上当相应对象加载完成前被用户提前终止下载时触发。
+- error：在window上当JavaScript报错时触发，在img元素上当无法加载指定图片时触发，在object元素上当无法加载相应对象时触发，在窗套上当一个或多个窗格无法完成加载时触发。
+- select：在文本框（input或textarea）上当用户选择了一个或多个字符时触发。
 - resize：在window或窗格上当窗口或窗格被缩放时触发。
-- scroll：当用户滚动包含滚动条的元素时在元素上触发。<body>元素包含已加载页面的滚动条。
+- scroll：当用户滚动包含滚动条的元素时在元素上触发。body元素包含已加载页面的滚动条。
 - unload：在文档卸载完成后触发，可以给body添加一个onunload事件，在页面卸载时执行一些操作。
 - resize：当浏览器窗口被缩放到新高度或宽度时，会触发resize事件。
 #### 焦点事件
@@ -1766,7 +1766,7 @@ requestAnimationFrame(fn,TimeStamp)
 #### 通过requestAnimationFrame节流
 
 ### 基本的画布功能
-出现在开始和结束标签之间的内容是后备数据，会在浏览器不支持<canvas>元素时显示。
+出现在开始和结束标签之间的内容是后备数据，会在浏览器不支持canvas元素时显示。
 ```html
 <canvas id="drawing" width="200" height="200">A drawing of something.</canvas>
 ```
@@ -1782,7 +1782,7 @@ width和height属性也可以在DOM节点上设置，因此可以随时修改。
     drawing.toDataURL('image/png') // 导出一张PNG格式的图片
 ```
 ### 2D绘图上下文
-2D上下文的坐标原点(0, 0)在<canvas>元素的左上角。所有坐标值都相对于该点计算，因此x坐标向右增长，y坐标向下增长。默认情况下，width和height表示两个方向上像素的最大值。  
+2D上下文的坐标原点(0, 0)在canvas元素的左上角。所有坐标值都相对于该点计算，因此x坐标向右增长，y坐标向下增长。默认情况下，width和height表示两个方向上像素的最大值。  
 **1. 填充和描边**  
 填充以指定样式（颜色、渐变或图像）自动填充形状，而描边只为图形边界着色。  
 - 填充: fillStyle 字符串、渐变对象或图案对象CSS颜色值
@@ -1879,7 +1879,7 @@ document.getElementById('cavans').getContext('webgl')
 ```
 ## 十九、表单脚本
 ### 表单基础
-表单在HTML中以<form>元素表示，在JavaScript中则以HTMLFormElement类型表示。  
+表单在HTML中以form元素表示，在JavaScript中则以HTMLFormElement类型表示。  
 ```js
     let form = document.getElementById("form1");
     // 取得页面中的第一个表单
@@ -1964,14 +1964,14 @@ setSelectionRange(begin,end)  选择部分文本。
 - formnovalidate/formNoValidate 整个form禁用验证
 
 ### 选择框编程
-选择框是使用<select>和<option>元素创建的。
-- add(newOption, relOption)：在relOption之前向控件中添加新的<option>。
+选择框是使用select和option元素创建的。
+- add(newOption, relOption)：在relOption之前向控件中添加新的option。
 - multiple：布尔值，表示是否允许多选，等价于HTML的multiple属性。
-- options：控件中所有<option>元素的HTMLCollection。
+- options：控件中所有option元素的HTMLCollection。
 - remove(index)：移除给定位置的选项。
 - selectedIndex：选中项基于0的索引值，如果没有选中项则为-1。对于允许多选的列表，始终是第一个选项的索引。
 - size：选择框中可见的行数，等价于HTML的size属性。
-<option>元素存在以下属性：
+option元素存在以下属性：
 - index：选项在options集合中的索引。
 - label：选项的标签，等价于HTML的label属性。
 - selected：布尔值，表示是否选中了当前选项。把这个属性设置为true会选中当前选项。
@@ -1997,7 +1997,7 @@ Encoding API主要用于实现字符串与定型数组之间的转换。
 ### File API与Blob API
 File API与Blob API是为了让Web开发者能以安全的方式访问客户端机器上的文件，从而更好地与这些文件交互而设计的。
 ### 媒体元素
-迫使用Flash以便达到最佳的跨浏览器兼容性。HTML5新增了两个与媒体相关的元素，即<audio>和<video>，从而为浏览器提供了嵌入音频和视频的统一解决方案。  
+迫使用Flash以便达到最佳的跨浏览器兼容性。HTML5新增了两个与媒体相关的元素，即audio和video，从而为浏览器提供了嵌入音频和视频的统一解决方案。  
 ### 原生拖放
 在某个元素被拖动时，会（按顺序）触发以下事件：
 1. dragstart
@@ -2362,6 +2362,7 @@ JSON中的对象必须使用双引号把属性名包围起来。
 Ajax（Asynchronous JavaScript and XML，即异步JavaScript加XML）的技术。  
 把Ajax推到历史舞台上的关键技术是XMLHttpRequest（XHR）对象。  
 ### XMLHttpRequest对象
+#### 使用XHR
 ```js
 let xhr = new XMLHttpRequest()
 xhr.open('get',url,false)
@@ -2372,5 +2373,238 @@ open()方法接收三个参数，请求方式，url还有是否异步。
 只能访问同源URL，也就是域名相同、端口相同、协议相同。如果请求的URL与发送请求的页面在任何方面有所不同，则会抛出安全错误。
 :::
 send方法接收一个参数，是作为请求体发送的数据。  
+如果发送的请求是同步的，那么js会等待服务器响应后继续执行，xhr对象的以下属性会被填充数据：  
+- responseText：作为响应体返回的文本。
+- responseXML：如果响应的内容类型是"text/xml"或"application/xml"，那就是包含响应数据的XMLDOM文档。
+- status：响应的HTTP状态。
+- statusText：响应的HTTP状态描述。
+在发送异步请求时，XHR对象有一个readyState属性，表示当前处在请求/响应过程的哪个阶段。这个属性有如下可能的值：  
+- 0：未初始化（Uninitialized）。尚未调用open()方法。
+- 1：已打开（Open）。已调用open()方法，尚未调用send()方法。
+- 2：已发送（Sent）。已调用send()方法，尚未收到响应。
+- 3：接收中（Receiving）。已经收到部分响应。
+- 4：完成（Complete）。已经收到所有响应，可以使用了。
+每次readyState从一个值变成另一个值，都会触发readystatechange事件。为保证跨浏览器兼容，onreadystatechange事件处理程序应该在调用open()之前赋值。
+```js
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+          alert(xhr.responseText);
+        } else {
+          alert("Request was unsuccessful: " + xhr.status);
+        }
+      }
+    };
+    xhr.open("get", "example.txt", true);
+    xhr.send(null);
+```
+在收到响应之前如果想取消异步请求，可以调用xhr.abort()方法。
 
+#### HTTP头部
+默认情况下，XHR请求会发送以下头部字段：
+- Accept：浏览器可以处理的内容类型。
+- Accept-Charset：浏览器可以显示的字符集。
+- Accept-Encoding：浏览器可以处理的压缩编码类型。
+- Accept-Language：浏览器使用的语言。
+- Connection：浏览器与服务器的连接类型。
+- Cookie：页面中设置的Cookie。
+- Host：发送请求的页面所在的域。
+- Referer：发送请求的页面的URI。注意，这个字段在HTTP规范中就拼错了，所以考虑到兼容性也必须将错就错。（正确的拼写应该是Referrer。）
+- User-Agent：浏览器的用户代理字符串。
+如果需要发送额外的请求头部，可以使用setRequestHeader()方法。这个方法接收两个参数：头部字段的名称和值。必须在open()之后、send()之前调用setRequestHeader()：
+```js
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+          alert(xhr.responseText);
+        } else {
+          alert("Request was unsuccessful: " + xhr.status);
+        }
+      }
+    };
+    xhr.open("get", "example.php", true);
+    xhr.setRequestHeader('key','value')
+```
+- getResponseHeader(name) 获取队形头部信息
+- getAllResponseHeaders() 获取所有头部信息
 
+#### GET请求
+用于向服务器查询某些信息。
+```js
+  xhr.open("get", "example.php?name1=value1&name2=value2", true);
+```
+#### POST请求
+用于向服务器发送应该保存的数据，POST请求都应该在请求体中携带提交的数据。
+- Content-Type头部设置为"application/x-www-formurlencoded" 可以模拟表单提交
+::: tip 注意
+POST请求相比GET请求要占用更多资源。从性能方面说，发送相同数量的数据，GET请求比POST请求要快两倍。
+:::
+#### XMLHttpRequest Level 2
+新增**FormData**类型，可以发送form表单：
+```js
+let xhr = new XMLHttpRequest();
+xhr.open("post", "example.php", true);
+let form = document.getElementById('form');
+xhr.send(new FormDate(form));
+```
+**超时：**  
+```js
+let xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {}
+xhr.open("get", "example.php", true);
+xhr.timeout = 1000;
+xhr.ontimeout = function() {
+  alert("请求超时");
+}
+xhr.send(null);
+```
+超时之后仍会触发onreadystatechange事件，readyState为4，但是访问status会报错。
+**overrideMimeType()方法：**
+overrideMimeType()方法用于重写XHR响应的MIME类型。
+```js
+xhr.overrideMimeType('text/xml')
+```
+### 进度事件
+6个进度相关的事件: 
+- loadstart：在接收到响应的第一个字节时触发。
+- progress：在接收响应期间反复触发。
+- error：在请求出错时触发。
+- abort：在调用abort()终止连接时触发。
+- load：在成功接收完响应时触发。
+- loadend：在通信完成时，且在error、abort或load之后触发。
+每次请求都会首先触发loadstart事件，之后是一个或多个progress事件，接着是error、abort或load中的一个，最后以loadend事件结束。
+#### progress事件
+每次触发时，onprogress事件处理程序都会收到event对象，其target属性是XHR对象，且包含3个额外属性：
+- lengthComputable是一个布尔值，表示进度信息是否可用；
+- position是接收到的字节数；
+- totalSize是响应的Content-Length头部定义的总字节数。
+
+### 跨源资源共享
+跨源资源共享（CORS, Cross-Origin Resource Sharing）定义了浏览器与服务器如何实现跨源通信。CORS背后的基本思路就是使用自定义的HTTP头部允许浏览器和服务器相互了解，以确实请求或响应应该成功还是失败。  
+对于简单的请求，在发送时会有一个额外的头部叫Origin，包含发送请求的页面的源（协议、域名和端口）。
+```js
+Origin: http://www.nczonline.net
+```
+如果服务器决定响应请求，那么应该发送Access-Control-Allow-Origin头部，包含相同的源；或者如果资源是公开的，那么就包含"*"。  
+```js
+Access-Control-Allow-Origin: http://www.nczonline.net
+```
+现代浏览器通过XMLHttpRequest对象原生支持CORS。在尝试访问不同源的资源时，这个行为会被自动触发。跨域XHR对象也施加了一些额外限制：
+- 不能使用setRequestHeader()设置自定义头部。
+- 不能发送和接收cookie。
+- getAllResponseHeaders()方法始终返回空字符串。
+#### 预检请求
+CORS通过一种叫预检请求（preflighted request）的服务器验证机制，允许使用自定义头部、复杂请求，以及不同请求体内容类型。在发送复杂请求时，会先向服务器发送一个预检请求，这个请求使用OPTIONS方法发送并包含以下头部：
+- Origin：与简单请求相同。
+- Access-Control-Request-Method：请求希望使用的方法。
+- Access-Control-Request-Headers:（可选）要使用的逗号分隔的自定义头部列表。
+在这个请求发送后，服务器可以确定是否允许这种类型的请求。服务器会通过在响应中发送如下头部与浏览器沟通这些信息：
+- Access-Control-Allow-Origin：允许浏览器访问的源。
+- Access-Control-Allow-Methods：允许的方法（逗号分隔的列表）。
+- Access-Control-Allow-Headers：服务器允许的头部（逗号分隔的列表）。
+- Access-Control-Max-Age：缓存预检请求的秒数。
+预检请求返回后，结果会按响应指定的时间缓存一段时间。换句话说，只有第一次发送这种类型的请求时才会多发送一次额外的HTTP请求。
+#### 凭据请求
+默认情况下，跨源请求不提供凭据（cookie、HTTP认证和客户端SSL证书）。可以通过将withCredentials属性设置为true来表明请求会发送凭据。如果服务器允许带凭据的请求，那么可以在响应中包含如下HTTP头部：
+```
+Access-Control-Allow-Credentials: true
+```
+::: tip 注意
+服务器也可以在预检请求的响应中发送这个HTTP头部，以表明这个源允许发送凭据请求。
+:::
+### 替代性跨源技术
+CORS出现之前的一些跨域解决方案，不需要修改服务器。
+#### 图片探测
+利用`<img>`标签实现跨域通信的最早的一种技术。可以动态创建图片，然后通过它们的onload和onerror事件处理程序得知何时收到响应。  
+```js
+    let img = new Image();
+    img.onload = img.onerror = function() {
+      alert("Done! ");
+    };
+    img.src = "http://www.example.com/test?name=Nicholas";
+```
+只能发送GET请求、无法获取服务器响应的内容。
+#### JSONP
+JSON with padding，是在Web服务上流行的一种JSON变体。JSONP格式包含两个部分：回调和数据：
+```
+http://freegeoip.net/json/?callback=handleResponse
+```
+JSONP调用是通过动态创建`<script>`元素并为src属性指定跨域URL实现的。
+```js
+    function handleResponse(response) {
+      console.log(`
+          You're at IP address ${response.ip}, which is in
+          ${response.city}, ${response.region_name}`);
+    }
+    let script = document.createElement("script");
+    script.src = "http://freegeoip.net/json/?callback=handleResponse";
+    document.body.insertBefore(script, document.body.firstChild);
+```
+缺点：不安全，不能确定是否请求成功。
+### Fetch API
+XMLHttpRequest可以选择异步，而Fetch API则必须是异步。
+#### 基本用法
+fetch()方法是暴露在全局作用域中的，包括主页面执行线程、模块和工作线程。调用这个方法，浏览器就会向给定URL发送请求。  
+```js
+let r = fetch('utl')
+console.log(r) // Promise
+r.then(response => response.text())
+.then(text => console.log(text))
+```
+Fetch API支持通过Response的status（状态码）和statusText（状态文本）属性检查响应状态。  
+#### 常见Fetch请求模式
+发送JSON数据：
+```js
+    let payload = JSON.stringify({
+      foo: 'bar'
+    });
+    let jsonHeaders = new Headers({
+      'Content-Type': 'application/json'
+    });
+    fetch('/send-me-json', {
+      method: 'POST',    // 发送请求体时必须使用一种HTTP方法
+      body: payload,
+      headers: jsonHeaders
+    });
+```
+在请求体中发送参数：
+```js
+    let payload = 'foo=bar&baz=qux';
+    let paramHeaders = new Headers({
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    });
+    fetch('/send-me-params', {
+      method: 'POST',   // 发送请求体时必须使用一种HTTP方法
+      body: payload,
+      headers: paramHeaders
+    });
+```
+发送文件：
+```js
+    let imageFormData = new FormData();
+    let imageInput = document.querySelector("input[type='file']");
+    imageFormData.append('image', imageInput.files[0]);
+    fetch('/img-upload', {
+      method: 'POST',
+      body: imageFormData
+    });
+```
+发送跨源请求: 需要包含cors头部，或者发送no-cors请求，但是无法得到返回值。  
+中断请求：AbortController. abort()会中断所有网络传输。  
+#### Headers对象
+Headers与Map类型都有get()、set()、has()和delete()等实例方法。  
+在初始化Headers对象时，也可以使用键/值对形式的对象，而Map则不可以。  
+Headers对象通过append()方法支持添加多个值。  
+#### Request对象
+```js
+    let r = new Request('https://foo.com',init);
+    console.log(r);
+    // Request {...}
+    // 克隆Request对象
+    let r2 = r.clone();
+    // 使用Request对象，一个对象只能请求一次
+    fetch(r);
+```
+#### Response对象
