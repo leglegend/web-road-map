@@ -4,10 +4,10 @@
 ## 入手推荐
 微信读书65元可购入此书(无限卡可白嫖)，也可以试读前十章，之所以推荐微信读书，是因为电子书上面的代码颜色比较适合阅读，不认识的单词也可以长按查询知道其中文意思和发音，微信读书上还有很多别的书籍，而且大部分是免费的。
 ## 一、JavaScript和ECMAScript
-原文第一章介绍了JavaScript的历史，其实对大多数人来说，并不需要关注JavaScript的历史，但需要知道JavaScript和ECMAScript的关系。</br>
-一句话总结：ECMAScript是一种规范，而JavaScript是实现这种规范的语言。</br>
-对于浏览器来说，除了ECMAScript这种规范，还有W3C(万维网联盟)指定的HTML规范。我们目前常用的浏览器，Chrome、Firefox、Safari、Opera、IE(这个也常用么?)都是根据ECMAScript和W3C指定的规范来实现的，但是规范是规范，实现的方式是不同的，这也就导致了不同的浏览器有不同的实现方式，所以一个让程序员头疼的问题就出现了————浏览器兼容性。</br>
-除了不同浏览器实现的规范方式不同，还有规范本身也在一直更新，比如老的IE8就不支持ECMAScript6，如果你们公司除了需要兼容不同的浏览器的同时，还要兼容浏览器的不同版本，那就真的是男上加男了。</br>
+原文第一章介绍了JavaScript的历史，其实对大多数人来说，并不需要关注JavaScript的历史，但需要知道JavaScript和ECMAScript的关系。  
+一句话总结：ECMAScript是一种规范，而JavaScript是实现这种规范的语言。  
+对于浏览器来说，除了ECMAScript这种规范，还有W3C(万维网联盟)指定的HTML规范。我们目前常用的浏览器，Chrome、Firefox、Safari、Opera、IE(这个也常用么?)都是根据ECMAScript和W3C指定的规范来实现的，但是规范是规范，实现的方式是不同的，这也就导致了不同的浏览器有不同的实现方式，所以一个让程序员头疼的问题就出现了————浏览器兼容性。  
+除了不同浏览器实现的规范方式不同，还有规范本身也在一直更新，比如老的IE8就不支持ECMAScript6，如果你们公司除了需要兼容不同的浏览器的同时，还要兼容浏览器的不同版本，那就真的是男上加男了。  
 其实对于现代浏览器来说(上面的除了IE都是)，程序员已经不需要过多关注不同浏览器带来的问题，浏览器本身对于规范的实施比较到位，使用框架也能通过插件完成对不同浏览器的支持，还是需要把精力放在技术本身，这些东西了解下就行。
 ## 二、在HTML中使用JavaScript
 ### script标签和script标签属性
@@ -16,11 +16,11 @@
 - async：指定是否异步加载，默认是false，如果是true，那么就是异步加载，如果是false，那么就是同步加载。异步不会阻止浏览器继续加载下面的内容，需保证异步加载的js文件互相之间没有依赖。
 - chartset：指定JavaScript的编码，默认是UTF-8，也可以指定为GBK等。
 - crossorigin：指定跨域，默认是anonymous，也可以指定为use-credentials。
-- defer：指定是否延迟加载，默认是false，如果开启则浏览器会在解析完</html>标签后再加载。
+- defer：指定是否延迟加载，默认是false，如果开启则浏览器会在解析完`</html>`标签后再加载。
 - intergrity：指定脚本的完整性，默认是空。
 - language：指定JavaScript的语言，默认是JavaScript。(已废弃)
 - src：指定JavaScript的路径，默认是空。
-<br/>
+  
 
 引入JavaScript的两种方式：
 ```html
@@ -32,9 +32,9 @@
 ```
 通过`src`标签引入外部js或直接在`<script>`标签中写入JavaScript代码，这两种方式都可以，前者更容易维护，后者更简单，。
 ### script的加载顺序
-在不适用`async`和`dfer`属性的前提下，会按照html文件标签的顺序加载，如果放进head里就是先加载script再加载页面，为了不阻塞页面，一般放在`body`标签的最后面。</br>
-如果使用`async`，会在加载到script标签时开始加载，但不会阻塞后面的标签加载，加载时间不确定，不完全按照标签顺序加载。</br>
-如果使用`defer`，会按照标签顺序，在加载完</html>标签后依序加载。</br>
+在不适用`async`和`dfer`属性的前提下，会按照html文件标签的顺序加载，如果放进head里就是先加载script再加载页面，为了不阻塞页面，一般放在`body`标签的最后面。  
+如果使用`async`，会在加载到script标签时开始加载，但不会阻塞后面的标签加载，加载时间不确定，不完全按照标签顺序加载。  
+如果使用`defer`，会按照标签顺序，在加载完`</html>`标签后依序加载。  
 ### noscript标签
 提示用户您的浏览器不支持script。
 ## 三、基本数据类型
@@ -65,19 +65,19 @@ Object(); // true
 ```
 ### Number
 #### 浮点数
-Number数据类型可以表示数值，包括整数和浮点数。浮点数这里有个0.1+0.2！=0.3的结果，因为浮点数的精度问题。0.1会被换算成二进制进行计算，而0.1的二进制是个无限小数，所以计算出来的结果会是0.300000000000004。一般会采用放大为整数计算再缩小10的倍数。</br>
-浮点数可以用科学计数法表示，如1.23e5，表示1.23×10的5次方，1.23e-5表示1.23×10的-5次方。</br>
+Number数据类型可以表示数值，包括整数和浮点数。浮点数这里有个0.1+0.2！=0.3的结果，因为浮点数的精度问题。0.1会被换算成二进制进行计算，而0.1的二进制是个无限小数，所以计算出来的结果会是0.300000000000004。一般会采用放大为整数计算再缩小10的倍数。  
+浮点数可以用科学计数法表示，如1.23e5，表示1.23×10的5次方，1.23e-5表示1.23×10的-5次方。  
 #### 范围
-Number不可是无限大的，可以用Infinity表示无限大，-Infinity表示无限小。</br>
+Number不可是无限大的，可以用Infinity表示无限大，-Infinity表示无限小。  
 #### NaN
 NaN表示Not a Number，即非数字。设计到NaN的所有操作都会返回NaN，可以通过isNaN()函数判断某个变量或表达式是否是NaN。
 #### 数值转换
-可以用Number()，parseInt()和parseFloat()函数转换为整数和浮点数，具体细节不说了，整数最好用parseInt()，浮点数用parseFloat()。</br>
+可以用Number()，parseInt()和parseFloat()函数转换为整数和浮点数，具体细节不说了，整数最好用parseInt()，浮点数用parseFloat()。  
 ### String
-字符串类型，可用单引号、双引号、反引号标示。</br>
-几乎所有值都可用toString()转换为字符串。</br>
+字符串类型，可用单引号、双引号、反引号标示。  
+几乎所有值都可用toString()转换为字符串。  
 ### Symbol
-就是说Symbol()函数可以给一个不重复的初始值，我把它当成不显示具体值的uuid。</br>
+就是说Symbol()函数可以给一个不重复的初始值，我把它当成不显示具体值的uuid。  
 ### 语句
 - if语句
 - do...while语句
@@ -1340,7 +1340,7 @@ DocumentType类型的节点包含文档的文档类型（doctype）信息，Docu
 - nodeValue值为null；
 - parentNode值为Document对象；
 - 不支持子节点。
-name这个属性包含文档类型的名称，即紧跟在<! DOCTYPE后面的那串文本。
+name这个属性包含文档类型的名称，即紧跟在`<! DOCTYPE`后面的那串文本。
 ### DocumentFragment类型
 
 ### DOM编程
@@ -2608,3 +2608,322 @@ Headers对象通过append()方法支持添加多个值。
     fetch(r);
 ```
 #### Response对象
+调用fatch()后，它会返回一个解决为Response对象大的期约：
+```js
+fetch(url).then((response)=>{
+response : {
+  body:{}
+  status: 200
+  statusText: OK
+  redirected: false
+}
+})
+```
+#### Request、Response及Body混入
+没看懂
+### Beacon API
+关闭页面前发送一个请求，即使原始页面关闭，浏览器也会把这个请求发送出去。  
+navigator对象增加了一个sendBeacon()方法。这个简单的方法接收一个URL和一个数据有效载荷参数，并会发送一个POST请求。
+### Web Socket
+WebSocket的目标是通过一个长时连接实现与服务器全双工、双向的通信。因为Web Socket使用了自定义协议，所以URL方案（scheme）稍有变化：不能再使用http://或https://，而要使用ws://和wss://。  
+#### API
+创建一个新的Web Socket：
+```js
+let socket = new WebSocket("ws://www.example.com/server.php");
+    socket.close(); // 关闭
+```
+同源策略不适用于webscoket，可以连接任何站点。  
+WebSocket有一个readyState属性表示当前状态：
+- WebSocket.OPENING（0）：连接正在建立。
+- WebSocket.OPEN（1）：连接已经建立。
+- WebSocket.CLOSING（2）：连接正在关闭。
+- WebSocket.CLOSE（3）：连接已经关闭。
+#### 发送和接收数据
+要向服务器发送数据，使用send()方法并传入一个字符串、ArrayBuffer或Blob。 
+服务器向客户端发送消息时，WebSocket对象上会触发message事件。   
+```js
+    socket.onmessage = function(event) {
+      let data = event.data;
+      // 对数据执行某些操作
+    };
+```
+#### 其他事件
+- open：在连接成功建立时触发。
+- error：在发生错误时触发。连接无法存续。
+- close：在连接关闭时触发。
+### 安全
+在未授权系统可以访问某个资源时，可以将其视为跨站点请求伪造(CSRF)攻击。  
+需要验证请求发送者拥有对资源的访问权限。可以通过如下方式实现：
+- 要求通过SSL访问能够被Ajax访问的资源。
+- 要求每个请求都发送一个按约定算法计算好的令牌（token）。
+- 要求POST而非GET请求（很容易修改请求方法）。
+- 使用来源URL验证来源（来源URL很容易伪造）。
+- 基于cookie验证（同样很容易伪造）。
+
+## 二十五、客户端存储
+### cookie
+cookie在浏览器中是由以下参数构成的：
+- 名称name：唯一标识cookie的名称。不区分大小写
+- 值value：存储在cookie里的字符串值。这个值必须经过URL编码。
+- 域domain：cookie有效的域。发送到这个域的所有请求都会包含对应的cookie。
+- 路径path：请求URL中包含这个路径才会把cookie发送到服务器。
+- 过期时间expires：表示何时删除cookie的时间戳。
+- 安全标志secure：设置之后，只在使用SSL安全连接的情况下才会把cookie发送到服务器。
+域、路径、过期时间和secure标志用于告诉浏览器什么情况下应该在请求中包含cookie。这些参数并不会随请求发送给服务器，实际发送的只有cookie的名/值对。  
+#### JavaScript中的cookie
+document.cookie = "name=xxx"就可以设置，最好还是使用encodeURIComponent()对名称和值进行编码：
+```js
+    document.cookie = encodeURIComponent("name") + "=" +
+                      encodeURIComponent("Nicholas");
+```
+#### 子cookie
+为绕过浏览器对每个域cookie数的限制,在单个cookie存储的小块数据:
+```js
+    name=name1=value1&name2=value2&name3=value3&name4=value4&name5=value5
+```
+#### 使用cookie的注意事项
+HTTP-only的cookie，只能在服务器读取，可以在浏览器设置。  
+
+### Web Storage
+WebStorage的目的是解决通过客户端存储不需要频繁发送回服务器的数据时使用cookie的问题。  
+localStorage是永久存储机制，sessionStorage是跨会话的存储机制。  
+#### Storage类型
+Storage类型用于保存名/值对数据，有以下方法：
+- clear()：删除所有值；不在Firefox中实现。
+- getItem（name）：取得给定name的值。
+- key（index）：取得给定数值位置的名称。
+- removeItem（name）：删除给定name的名/值对。
+- setItem（name, value）：设置给定name的值。
+ Storage类型只能存储字符串。非字符串数据在存储之前会自动转换为字符串。  
+#### sessionStorage对象
+sessionStorage对象只存储会话数据，这意味着数据只会存储到浏览器关闭。  
+#### localStorage对象
+要访问同一个localStorage对象，页面必须来自同一个域（子域不可以）、在相同的端口上使用相同的协议。  
+存储在localStorage中的数据会保留到通过JavaScript删除或者用户清除浏览器缓存。  
+#### 存储事件
+每当Storage对象发生变化时，都会在文档上触发storage事件。
+#### 限制
+
+### IndexedDB
+Indexed Database API简称IndexedDB，是浏览器中存储结构化数据的一个方案。  
+#### 数据库
+IndexedDB使用对象存储而不是表格保存数据。
+```js
+    let db,
+        request,
+        version = 1;
+    request = indexedDB.open("admin", version); // 有则返回，无则创建
+    request.onerror = (event) =>
+      alert(`Failed to open: ${event.target.errorCode}`);
+    request.onsuccess = (event) => {
+      db = event.target.result; // 数据库实例
+    };
+```
+#### 对象存储
+```js
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      // 如果存在则删除当前objectStore。测试的时候可以这样做
+      // 但这样会在每次执行事件处理程序时删除已有数据
+      if (db.objectStoreNames.contains("users")) {
+        db.deleteObjectStore("users");
+      }
+      db.createObjectStore("users", { keyPath: "username" });
+    };
+```
+#### 事务
+```js
+    let transaction = db.transaction("users");// 不传参数对所有数据库有读取权限，传参对对应数据库有读权限 也可以传字符串数组，访问多个数据库
+```
+第二个参数决定权限："readonly"、"readwrite"或"versionchange"。  
+```js
+    const transaction = db.transaction("users"),
+        store = transaction.objectStore("users"),
+        request = store.get("007");
+        store.add()
+        store.put()
+        store.delete()
+        store.clear()
+    request.onerror = (event) => alert("Did not get the object! ");
+    request.onsuccess = (event) => alert(event.target.result.firstName);
+```
+#### 插入对象
+add()和put()都接收新对象插入数据库，遇到同名数据时，add会报错，put会更新对象。  
+#### 通过游标查询
+暂时跳过。
+
+## 二十六、模块
+### 理解模块模式
+把逻辑分块，各自封装，相互独立，每个块自行决定对外暴露什么，同时自行决定引入执行哪些外部代码。  
+#### 模块标识符
+模块系统本质上是键/值实体，其中每个模块都有个可用于引用它的标识符。这个标识符在模拟模块的系统中可能是字符串，在原生实现的模块系统中可能是模块文件的实际路径。
+#### 模块依赖
+本地模块向模块系统声明一组外部模块（依赖），这些外部模块对于当前模块正常运行是必需的。模块系统检视这些依赖，进而保证这些外部模块能够被加载并在本地模块运行时初始化所有依赖。  
+#### 模块加载
+只有整个依赖图都加载完成，才可以执行入口模块。
+#### 入口
+相互依赖的模块必须指定一个模块作为入口（entry point），这也是代码执行的起点。
+#### 异步依赖
+让JavaScript通知模块系统在必要时加载新模块，并在模块加载完成后提供回调。
+#### 动态依赖
+
+#### 静态分析
+分析工具会检查代码结构并在不实际执行代码的情况下推断其行为。对静态分析友好的模块系统可以让模块打包系统更容易将代码处理为较少的文件。
+#### 循环依赖
+A->B->C->A 
+
+### 凑合的模块系统
+ES6之前的模块有时候会使用函数作用域和立即调用函数表达式（IIFE, ImmediatelyInvoked Function Expression）将模块定义封装在匿名闭包中。模块定义是立即执行的。
+
+### 使用ES6之前的模块加载器
+#### CommonJS
+CommonJS模块语法不能在浏览器中直接运行。   
+CommonJS模块定义需要使用require()指定依赖，而使用exports对象定义自己的公共API：
+```js
+    var moduleB = require('./moduleB');
+    module.exports = {
+      stuff: moduleB.doStuff();
+    };
+```
+无论一个模块在require()中被引用多少次，模块永远是单例。  
+模块第一次加载后会被缓存，后续加载会取得缓存的模块。  
+在CommonJS中，模块加载是模块系统执行的同步操作。（运行到对应代码时加载）  
+```js 
+    console.log('moduleA');
+    if (loadCondition) {
+      require('./moduleA');
+    }
+```
+模块不会指定自己的标识符，它们的标识符由其在模块文件层级中的位置决定。  
+module.exports:
+```js
+    module.exports = 'foo';
+        
+    module.exports = {
+      a: 'A',
+      b: 'B'
+    };
+    // 等价操作：
+    module.exports.a = 'A';
+    module.exports.b = 'B';
+
+    // 作为类导出
+    class A {}
+    module.exports = A;
+    var A = require('./moduleA');
+    var a = new A();
+
+    // 作为实例导出
+    class A {}
+    module.exports = new A();
+```
+#### 异步模块定义
+异步模块定义（AMD, AsynchronousModule Definition）的模块定义系统则以浏览器为目标执行环境，这需要考虑网络延迟的问题。AMD的一般策略是让模块声明自己的依赖，而运行在浏览器中的模块系统会按需获取依赖，并在依赖加载完成后立即执行依赖它们的模块。 
+AMD加载器会在所有依赖模块加载完毕后立即调用模块工厂函数。   
+AMD支持可选地为模块指定字符串标识符。  
+```js
+    // ID为’moduleA’的模块定义。moduleA依赖moduleB，
+    // moduleB会异步加载
+    define('moduleA', ['moduleB'], function(moduleB) {
+      return {
+        stuff: moduleB.doStuff();
+      };
+    });
+```
+#### 通用模块定义
+为了统一CommonJS和AMD生态系统，通用模块定义（UMD）规范应运而生。UMD可用于创建这两个系统都可以使用的模块代码。本质上，UMD定义的模块会在启动时检测要使用哪个模块系统，然后进行适当配置，并把所有逻辑包装在一个立即调用的函数表达式（IIFE）中。
+### 使用ES6模块
+#### 模块标签及定义
+带有type="module"属性的`<script>`标签会告诉浏览器相关代码应该作为模块执行，而不是作为传统的脚本执行。模块可以嵌入在网页中，也可以作为外部文件引入：
+```html
+    <script type="module">
+      // 模块代码
+    </script>
+    <script type="module" src="path/to/myModule.js"></script>
+```
+所有模块都会像`<script defer>`加载的脚本一样按顺序执行。(立即下载模块文件，但执行会延迟到文档解析完成。)  `<script type="module">`在页面中出现的顺序就是它们执行的顺序。  
+```html
+    <!-- 第二个执行-->
+    <script type="module"></script>
+    <!-- 第三个执行-->
+    <script type="module"></script>
+    <!-- 第一个执行-->
+    <script></script>
+```
+#### 模块加载
+ESModule既可以通过浏览器原生加载，也可以与第三方加载器和构建工具一起加载。ES6模块加载是异步的，这个异步递归加载过程会持续到整个应用程序的依赖图都解析完成。解析完依赖图，应用程序就可以正式加载模块了。
+#### 模块行为
+CommonJS共有特性：
+- 模块代码只在加载后执行。
+- 模块只能加载一次。
+- 模块是单例。
+- 模块可以定义公共接口，其他模块可以基于这个公共接口观察和交互。
+- 模块可以请求加载其他模块。
+- 支持循环依赖。
+ES6独有特性：
+- ES6模块默认在严格模式下执行。
+- ES6模块不共享全局命名空间。
+- 模块顶级this的值是undefined（常规脚本中是window）。
+- 模块中的var声明不会添加到window对象。
+- ES6模块是异步加载和执行的。
+
+#### 模块导出
+ES6模块支持两种导出：命名导出和默认导出。通过export关键字导出。不允许嵌套。  
+命名导出（named export）就好像模块是被导出值的容器：
+```js
+export const foo = 'foo'
+
+let foo = 'foo'
+export foo
+
+export { foo }
+
+export { foo as bar } //指定别名
+
+```
+默认导出（default export）就好像模块与被导出的值是一回事，这个模块本身就是导出的值。
+```js
+    const foo = 'foo';
+    export default foo
+
+    // 等同于export default foo;
+    export { foo as default };
+
+    export foo
+```
+因为命名导出和默认导出不会冲突，所以ES6支持在一个模块中同时定义这两种导出。 
+
+```js
+    // 命名行内导出
+    export const baz = 'baz';
+    export const foo = 'foo', bar = 'bar';
+    export function foo() {}
+    export function＊ foo() {}
+    export class Foo {}
+    // 命名子句导出
+    export { foo };
+    export { foo, bar };
+    export { foo as myFoo, bar };
+    // 默认导出
+    export default 'foo';
+    export default 123;
+    export default /[a-z]＊/;
+    export default { foo: 'foo' };
+    export { foo, bar as default };
+    export default foo
+    export default function() {}
+    export default function foo() {}
+    export default function＊() {}
+    export default class {}
+    // 会导致错误的不同形式：
+    // 行内默认导出中不能出现变量声明
+    export default const foo = 'bar';
+    // 只有标识符可以出现在export子句中
+    export { 123 as foo }
+    // 别名只能在export子句中出现
+    export const foo = 'foo' as myFoo;
+```
+
+#### 模块导入
+import必须出现在模块的顶级，import语句被提升到模块顶部。
