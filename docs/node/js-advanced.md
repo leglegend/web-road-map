@@ -2927,3 +2927,215 @@ export { foo as bar } //指定别名
 
 #### 模块导入
 import必须出现在模块的顶级，import语句被提升到模块顶部。
+导入对模块而言是只读的，实际上相当于const声明的变量。在使用*执行批量导入时，赋值给别名的命名导出就好像使用Object.freeze()冻结过一样。  
+命名导出和默认导出的区别也反映在它们的导入上。命名导出可以使用＊批量获取并赋值给保存导出集合的别名，而无须列出每个标识符：
+```js
+    // module.js
+    const foo = 'foo', bar = 'bar', baz = 'baz';
+    export { foo, bar, baz }
+    export default foo
+    // index.js
+    import * as Foo from './foo.js';
+    import { foo, bar, baz } from './foo.js';
+    import foo from './foo.js';
+    console.log(Foo.foo); // foo
+    console.log(Foo.bar); // bar
+    console.log(Foo.baz); // baz
+
+```
+#### 模块转移导出
+模块导入的值可以直接通过管道转移到导出。
+```js
+export * from './foo.js';
+export { foo, bar as myBar } from './foo.js';
+export { default } from './foo.js';
+export { foo as default } from './foo.js';
+```
+#### 工作者模块
+CMAScript 6模块与Worker实例完全兼容。Worker构造函数接收第二个参数，用于说明传入的是模块文件。  
+```js
+    // 第二个参数默认为{ type: 'classic' }
+    const scriptWorker = new Worker('scriptWorker.js');
+    const moduleWorker = new Worker('moduleWorker.js', { type: 'module' });
+```
+#### 向后兼容
+```js
+    // 支持模块的浏览器会执行这段脚本
+    // 不支持模块的浏览器不会执行这段脚本
+    <script type="module" src="module.js"></script>
+    // 支持模块的浏览器不会执行这段脚本
+    // 不支持模块的浏览器会执行这段脚本
+    <script nomodule src="script.js"></script>
+```
+
+## 二十七、工作者线程
+### 工作者线程简介
+使用工作者线程，浏览器可以在原始页面环境之外再分配一个完全独立的二级子环境。这个子环境不能与依赖单线程交互的API（如DOM）互操作，但可以与父环境并行执行代码。
+#### 工作者线程与线程
+工作者线程是以实际线程实现的。工作者线程能够使用SharedArrayBuffer在多个环境间共享内容。工作者线程相对比较重，不建议大量使用。
+#### 工作者线程的类型
+专用工作者线程、共享工作者线程和服务工作者线程。  
+专用工作者线程，通常简称为工作者线程、Web Worker或Worker，可以让脚本单独创建一个JavaScript线程，只能被创建它的页面使用。  
+共享工作者线程可以被多个不同的上下文使用，包括不同的页面。  
+服务工作者线程的主要用途是拦截、重定向和修改页面发出的请求，充当网络请求的仲裁者的角色。  
+####  WorkerGlobalScope
+在工作者线程内部，没有window的概念。这里的全局对象是WorkerGlobalScope的实例，通过self关键字暴露出来。  
+self上可用的属性是window对象上属性的严格子集。其中有些属性会返回特定于工作者线程的版本。
+### 专用工作者线程
+专用工作者线程可以与父页面交换信息、发送网络请求、执行文件输入/输出、进行密集计算、处理大量数据，以及实现其他不适合在页面执行线程里做的任务。
+#### 专用工作者线程的基本概念
+可以把专用工作者线程称为后台脚本（background script）。  
+工作者线程的脚本文件只能从与父页面相同的源加载。  
+Worker()构造函数返回的Worker对象是与刚创建的专用工作者线程通信的连接点。  
+Worker对象支持下列事件与属性：addEventListener('xx', handler)也可以接收时间
+- onerror：在工作者线程中发生ErrorEvent类型的错误事件时 （）
+- onmessage：在工作者线程中发生MessageEvent类型的消息事件时
+- onmessageerror：在工作者线程中发生MessageEvent类型的错误事件时
+- postMessage()：用于通过异步消息事件向工作者线程发送信息。
+- terminate()：用于立即终止工作者线程。
+在专用工作者线程内部，全局作用域是DedicatedWorkerGlobalScope的实例，通过self关键字访问该全局作用域。  
+DedicatedWorkerGlobalScope在WorkerGlobalScope基础上增加了以下属性和方法：
+- name：可以提供给Worker构造函数的一个可选的字符串标识符。
+- postMessage()：与worker.postMessage()对应的方法，用于从工作者线程内部向父上下文发送消息。
+- close()：与worker.terminate()对应的方法，用于立即终止工作者线程。
+- importScripts()：用于向工作者线程中导入任意数量的脚本。
+
+#### 专用工作者线程的生命周期
+三个状态：初始化（initializing）、活动（active）和终止（terminated）  
+可以再初始化时通过postMessage()发送消息，工作者线程初始化完毕后会自动执行。  
+一旦调用了terminate()，工作者线程的消息队列就会被清理并锁住，close()会通知工作者线程取消事件循环中的所有任务，并阻止继续添加新任务。  
+#### 配置Worker选项
+Worker构造函数的第二个参数是一个对象，用于配置工作者线程：
+- name：可以在工作者线程中通过self.name读取到的字符串标识符。
+- type：表示加载脚本的运行方式，可以是"classic"或"module"。"classic"将脚本作为常规脚本来执行，"module"将脚本作为模块来执行。
+- credentials：在type为"module"时，指定如何获取与传输凭证数据相关的工作者线程模块脚本。值可以是"omit"、"same-orign"或"include"。这些选项与fetch()的凭证选项相同。在type为"classic"时，默认为"omit"。
+
+#### 在JavaScript行内创建工作者线程
+工作者线程需要基于脚本文件来创建，但这并不意味着该脚本必须是远程资源。专用工作者线程也可以通过Blob对象URL在行内脚本创建。  
+```js
+const blod = new Blob([`self.onmessage = console.log`])
+const worker = new Worker(URL.createObjectURL(blod))
+worker.postMessage('hello')
+```
+可以利用函数序列化(toString)初始化工作者线程脚本：
+```js
+function consoseLog(msg) {
+  console.log(msg.data)
+}
+const blod = new Blob([`self.onmessage = ${consoseLog.toString()}`])
+const worker = new Worker(URL.createObjectURL(blod))
+worker.postMessage('hello')
+```
+#### 在工作者线程中动态执行脚本
+工作者线程中的脚本可以使用importScripts()方法通过编程方式加载和执行任意脚本。  
+importScripts()方法可以接收任意数量的脚本作为参数。浏览器下载它们的顺序没有限制，但执行则会严格按照它们在参数列表的顺序进行：
+```js
+    // main.js
+    const worker = new Worker('./worker.js');
+    // scriptA.js
+    console.log('scriptA executes');
+    // scriptB.js
+    console.log('scriptB executes');
+    // worker.js
+    console.log('importing scripts');
+    importScripts('./scriptA.js')
+    importScripts('./scriptB.js')
+    // 等价于
+    importScripts('./scriptA.js', './scriptB.js')
+```
+#### 委托任务到子工作者线程
+在工作者线程中再创建子工作者线程。子工作者线程的脚本路径根据父工作者线程而不是相对于网页来解析。  
+#### 处理工作者线程错误
+try/catch无法捕捉工作者线程的错误，，需要在Worker对象上添加onerror事件。  
+#### 与专用工作者线程通信
+1. 使用postMessage()
+2. 使用MessageChannel
+3. 使用BroadcastChannel
+
+#### 工作者线程数据传输
+工作者线程是独立的上下文，因此在上下文之间传输数据就会产生消耗。在JavaScript中，有三种在上下文间转移信息的方式：结构化克隆算法（structured clone algorithm）、可转移对象（transferable objects）和共享数组缓冲区（shared arraybuffers）。  
+- 结构化克隆算法可用于在两个独立上下文间共享数据。在通过postMessage()传递对象时，浏览器会遍历该对象，并在目标上下文中生成它的一个副本。消耗比较大。
+- 可转移对象可以把所有权从一个上下文转移到另一个上下文，只支持ArrayBuffer、MessagePort、 ImageBitmap、 OffscreenCanvas。
+```js
+    // 结构化克隆
+    const worker = new Worker('./worker.js');
+    const arrayBuffer = new ArrayBuffer(32);
+    worker.postMessage(arrayBuffer);
+    // 可转移对象
+    worker.postMessage(arrayBuffer, [arrayBuffer]);
+```
+- SharedArrayBuffer 在把SharedArrayBuffer传给postMessage()时，浏览器只会传递原始缓冲区的引用。结果是，两个不同的JavaScript上下文会分别维护对同一个内存块的引用。容易发生资源征用。  可使用Atomics对象让一个工作者线程获得SharedArrayBuffer实例的锁。
+
+#### 线程池
+因为启用工作者线程代价很大，所以某些情况下可以考虑始终保持固定数量的线程活动，需要时就把任务分派给它们。  
+线程数量可参考navigator.hardwareConcurrency属性返回的系统可用的核心数量。 
+
+### 共享工作者线程
+共享工作者线程或共享线程与专用工作者线程类似，但可以被多个可信任的执行上下文访问。  
+#### 共享工作者线程简介
+```js
+    const sharedWorker = new SharedWorker('./worker.js');
+```
+SharedWorker()则只会在相同的标识不存在的情况下才创建新实例。如果的确存在与标识匹配的共享工作者线程，则只会与已有共享者线程建立新的连接。不同的线程名称会强制浏览器创建多个共享工作者线程：
+```js
+    // 实例化一个共享工作者线程
+    //   - 全部基于同源调用构造函数
+    //   - 所有脚本解析为相同的URL
+    //   - 一个线程名称为’foo'，一个线程名称为’bar'
+    new SharedWorker('./sharedWorker.js', {name: 'foo'});
+    new SharedWorker('./sharedWorker.js', {name: 'foo'});
+    new SharedWorker('./sharedWorker.js', {name: 'bar'});
+```
+没有办法以编程方式终止共享线程，共享线程实例上没有terminate()方法。
+
+#### 连接到共享工作者线程
+每次调用SharedWorker()构造函数，无论是否创建了工作者线程，都会在共享线程内部触发connect事件。  
+
+### 服务工作者线程
+服务工作者线程（service worker）是一种类似浏览器中代理服务器的线程，可以拦截外出请求和缓存响应。  
+来自一个域的多个页面共享一个服务工作者线程。  
+服务工作者线程在两个主要任务上最有用：充当网络请求的缓存层和启用推送通知。  
+强制刷新会强制浏览器忽略所有网络缓存，而服务工作者线程对大多数主流浏览器而言就是网络缓存。  
+#### 服务工作者线程基础
+服务工作者线程没有全局构造函数，通过ServiceWorkerContainer管理：
+```js
+    navigator.serviceWorker.register('./serviceWorker.js');
+```
+
+## 二十八、最佳实践
+### 可维护性
+#### 什么是可维护的代码
+- 容易理解：无须求助原始开发者，任何人一看代码就知道它是干什么的，以及它是怎么实现的。
+- 符合常识：代码中的一切都显得顺理成章，无论操作有多么复杂。
+- 容易适配：即使数据发生变化也不用完全重写。
+- 容易扩展：代码架构经过认真设计，支持未来扩展核心功能。
+- 容易调试：出问题时，代码可以给出明确的信息，通过它能直接定位问题。
+
+#### 编码规范
+1. 可读性
+以下地方应该写注释：函数和方法、大型代码块、复杂的算法、使用黑科技
+2. 变量和函数命名
+- 变量名应该是名词，例如car或person。
+- 函数名应该以动词开始，例如getName()。返回布尔值的函数通常以is开头，比如isEnabled()。
+- 变量、函数和方法应该以小写字母开头，使用驼峰大小写（camelCase）形式，如getName()和isPerson。类名应该首字母大写，如Person、RequestFactory。常量值应该全部大写并以下划线相接，比如REQUEST_TIMEOUT。
+3. 变量类型透明化
+
+#### 松散耦合
+
+#### 编码惯例
+如果你不负责创建维护某个对象则：
+- 不要给实例或原型添加属性。
+- 不要给实例或原型添加方法。
+- 不要重定义已有的方法。
+需要修改就继承别人的对象，自己想怎么改就怎么改。  
+不要比较null，使用类型比较。  
+- 如果值应该是引用类型，则使用instanceof操作符检查其构造函数。
+- 如果值应该是原始类型，则使用typeof检查其类型。
+- 如果希望值是有特定方法名的对象，则使用typeof操作符确保对象上存在给定名字的方法。
+使用常量。  
+
+### 性能
+JavaScript一开始就是一门解释型语言，因此执行速度比编译型语言要慢一些。Chrome是第一个引入优化引擎将JavaScript编译为原生代码的浏览器。
+#### 作用域意识
+
+
