@@ -3137,5 +3137,128 @@ SharedWorker()则只会在相同的标识不存在的情况下才创建新实例
 ### 性能
 JavaScript一开始就是一门解释型语言，因此执行速度比编译型语言要慢一些。Chrome是第一个引入优化引擎将JavaScript编译为原生代码的浏览器。
 #### 作用域意识
+1. 避免全局查找
+2. 不使用with语句
+3. 避免不必要的属性查找
+常量和变量里面的值，数组元素都是O(1)复杂度，访问非常快。  
+访问对象属性的算法复杂度是O（n）。  
+避免通过多次查找获取一个值，使用对象的object属性超过一次，就应将其保存在局部变量中。  
+如果实现某个需求既可以使用数组的数值索引，又可以使用命名属性，那就都应该使用数值索引。 
+4. 优化循环
+简化终止条件、简化循环体、使用后测试循环(do while)
+```js
+for(let i=0;i<values.length;i++)
+// 改成这样更快
+for(let i=values.length;i>=0;i--)
+// 因为访问values.length的复杂度是O(n)，访问0的复杂度是O(1)
+```
+5. 展开循环
+如果循环次数固定，可以抛弃循环，直接多次调用。  
+如果循环体过大，可以用**达夫设备**，每8次为一个循环。  
+6. 避免重复解释
+应尽量避免把js代码当作字符串传递。
+7. 其他性能优化注意事项
+- 原生方法很快，Math是使用C++写的
+- switch语句很快，复杂if-else应该用switch，把最可能的放前面
+- 位操作很快
 
+#### 语句最少化
+avaScript代码中语句的数量影响操作执行的速度。一条可以执行多个操作的语句，比多条语句中每个语句执行一个操作要快。  
+1. 多个变量声明使用一个语句。
+2. 插入迭代性值
+```js
+    let name = values[i];
+    i++;
+    // 这样更快
+    let name = values[i++];
+```
+3. 使用数组和对象字面量
+```js
+let a = [1,2,3] // 比 new Array快
+let a = {
+  name:1
+}
+// 比let a = new Object快
+```
+#### 优化DOM交互
+JavaScript代码中，涉及DOM的部分无疑是非常慢的。
+1. 实时更新最小化
+实时更新的次数越多，执行代码所需的时间也越长。反之，实时更新的次数越少，代码执行就越快。  
+使用文档片段构建DOM结构，然后一次性将它添加到list元素。  
+2. 使用innerHTML
+大量DOM更新，innerHTML比appendChild()要快
+3. 使用事件委托
+事件委托利用了事件的冒泡。
+4. 注意HTMLCollection
+只要返回HTMLCollection对象，就应该尽量不访问它。
 
+### 部署
+#### 构建流程
+摇树优化（tree shaking），确定代码中哪些部分是不需要的。最终打包得到的文件可以瘦身很多。
+模块打包器的工作是识别应用程序中涉及的JavaScript依赖关系，将它们组合成一个大文件。
+
+#### 验证
+JSLint和ESLint
+
+#### 压缩
+代码大小（code size）和传输负载（wire weight）。
+1. 代码压缩
+2. JavaScript编译
+3. JavaScript转译
+转译可以将现代的代码转换成更早的ECMAScript版本，
+4. HTTP压缩
+
+## 附录A ES2018和ES2019
+ECMAScript 2018于2018年1月完成，主要增加了异步迭代、剩余和扩展操作符、正则表达式和期约等方面的特性。
+### 数组打平方法
+ECMAScript 2019在Array.prototype上增加了两个方法：flat()和flatMap()。这两个方法为打平数组提供了便利。如果没有这两个方法，则打平数组就要使用迭代或递归。
+#### Array.prototype.flat()
+```js
+    // 如果没有这两个方法
+    function flatten(sourceArray, flattenedArray = []) {
+      for (const element of sourceArray) {
+        if (Array.isArray(element)) {
+          flatten(element, flattenedArray);
+        } else {
+          flattenedArray.push(element);
+        }
+      }
+      return flattenedArray;
+    }
+    const arr = [[0], 1, 2, [3, [4, 5]], 6];
+    console.log(flatten(arr))
+    // [0, 1, 2, 3, 4, 5, 6]
+    arr.flat() // [0, 1, 2, 3, [4, 5], 6];
+    arr.flat(2)  // [0, 1, 2, 3, 4, 5, 6]
+```
+depth参数（默认值为1），表示要打平到几级，返回一个浅复制的数组。  
+
+#### Array.prototype.flatMap()
+Array.prototype.flatMap()方法会在打平数组之前执行一次映射操作。在功能上，arr.flatMap(f)与arr.map(f).flat()等价；
+
+### Object.fromEntries()
+ECMAScript 2019又给Object类添加了一个静态方法fromEntries()，用于通过键/值对数组的集合构建对象。
+```js
+    const map = new Map().set('foo', 'bar');
+    console.log(Object.fromEntries(map));
+    //{foo:'bar'}
+```
+### 字符串修理
+
+ECMAScript 2019向String.prototype添加了两个新方法：trimStart()和trimEnd()。它们分别用于删除字符串开头和末尾的空格。
+
+###  Symbol.prototype.description
+ECMAScript 2019在Symbol.prototype上增加了description属性，用于取得可选的符号描述。
+```js
+    const s = Symbol('foo');
+    console.log(s.toString());
+    // Symbol(foo)
+s..description// foo
+```
+### 可选的catch绑定
+ECMAScript 2019 catch(e) 中的(e)可以省略
+
+## 附录B 严格模式
+ECMAScript 5首次引入严格模式的概念。严格模式用于选择以更严格的条件检查JavaScript代码错误，可以应用到全局，也可以应用到函数内部。
+### 选择使用
+use strict
