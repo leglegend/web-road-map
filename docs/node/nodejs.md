@@ -176,4 +176,33 @@ Node采用事件驱动，通过事件循环处理所有任务。
 ### 异步编程的优势与难点
 基于事件驱动的非阻塞异步I/O模型。  
 try/catch语句不能捕获异步请求。
+### 异步编程解决方案
+- 事件发布/订阅模式。
+- Promise/Deferred模式。
+- 流程控制库。
+```js
+        // 订阅
+        emitter.on("event1", function (message) {
+          console.log(message);
+        });
+        // 只会触发一次
+        emitter.once"event1", function (message) {
+          console.log(message);
+        });
+        // 发布
+        emitter.emit('event1', "I am message! ");
+```
+Promise现在ES6已经支持了。
+
+## 五、内存控制
+在浏览器不需要过多的关注垃圾回收机制，但是服务器接收所有用户的访问，需要严格控制内存使用。
+### V8的垃圾回收机制与内存限制
+Node中通过JavaScript使用内存时就会发现只能使用部分内存（64位系统下约为1.4 GB,32位系统下约为0.7GB）。  
+当我们在代码中声明变量并赋值时，所使用对象的内存就分配在堆中。 
+可通过以下方式调整内存：   
+```
+        node --max-old-space-size=1700 test.js // 单位为MB
+        // 或者
+        node --max-new-space-size=1024 test.js // 单位为KB        
+```
 
