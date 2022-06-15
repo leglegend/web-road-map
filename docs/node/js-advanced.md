@@ -3262,3 +3262,82 @@ ECMAScript 2019 catch(e) 中的(e)可以省略
 ECMAScript 5首次引入严格模式的概念。严格模式用于选择以更严格的条件检查JavaScript代码错误，可以应用到全局，也可以应用到函数内部。
 ### 选择使用
 use strict
+### 变量
+```js
+    // 变量未声明
+    // 非严格模式：创建全局变量
+    // 严格模式：抛出ReferenceError
+    message = "Hello world! ";
+    // 删除变量
+    // 非严格模式：静默失败
+    // 严格模式：抛出ReferenceError
+    let color = "red";
+    delete color;
+```
+不允许变量名为implements、interface、let、package、private、protected、public、static和yield。 
+### 对象
+- 给只读属性赋值会抛出TypeError。
+- 在不可配置属性上使用delete会抛出TypeError。
+- 给不存在的对象添加属性会抛出TypeError。
+
+### 函数
+```js
+    // 命名参数重名
+    // 非严格模式：没有错误，只有第二个参数有效
+    // 严格模式：抛出SyntaxError
+    function sum (num, num){
+      // 函数代码
+    }
+```
+在严格模式下，命名参数和arguments是相互独立的。去掉了arguments.callee和arguments.caller。
+```js
+    // 在if语句中声明函数
+    // 非严格模式：函数提升至if语句外部
+    // 严格模式：抛出SyntaxError
+    if (true){
+      function doSomething(){
+        // ...
+      }
+    }
+```
+严格模式明确不允许使用eval和arguments作为标识符和操作它们的值。 
+### this强制转型
+在严格模式下，则始终以指定值作为函数this的值，无论指定的是什么值。非严格模式，null或undefined会被转型为window。
+### 类与模块
+ES6类和模块中定义的所有代码默认都处于严格模式。
+### 其他变化
+- 消除with语句
+- 去掉了八进制字面量
+
+## 附录C JavaScript库和框架
+### 框架
+“框架”（framework）涵盖各种不同的模式，但各自具有不同的组织形式，用于搭建复杂应用程序。JavaScript框架越来越多地表现为单页应用程序（SPA, Single PageApplication）。SPA使用HTML5浏览器历史API，在只加载一个页面的情况下通过URL路由提供完整的应用程序用户界面。
+### 通用库
+所有通用库都致力于通过将常用功能封装为新API，来补偿浏览器接口、弥补实现差异。  
+Lodash提供了很多操作原生类型，如数组、对象、函数和原始值的增强方法。  
+
+### 动画与特效
+D3 three.js
+
+## 附录D JavaScript工具
+### 包管理
+npm，即Node包管理器（Node Package Manager）
+### 模块加载器
+require.js，即Require.js，一个基于AMD的模块加载器。
+### 模块打包器
+模块打包器可以将任意格式、任意数量的模块合并为一个或多个文件，供客户端加载。
+Webpack、 JSPM、Browserify、Rollup
+### 编译/转译工具及静态类型系统
+Babel、TypeScript
+### 高性能脚本工具
+WebAssembly、asm.js
+### 构建工具、自动化系统和任务运行器
+Grunt、Gulp
+### 代码检查和格式化
+ESLint、JSLint
+### 压缩工具
+Uglify、Google Closure Compiler
+### 单元测试
+测试驱动开发（TDD, TestDriven Development）是以单元测试为中心的软件开发过程。
+Mocha、Jasmine、JsUnit
+### 文档生成器

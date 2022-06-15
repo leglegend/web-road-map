@@ -38,6 +38,10 @@ module.exports = {
         {
           title: 'JavaScript高级程序设计',
           path: '/node/js-advanced'
+        },
+        {
+          title: '深入浅出Node.js',
+          path: '/node/nodejs'
         }
       ],
       '/': ['' /* / */]
