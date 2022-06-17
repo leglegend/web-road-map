@@ -189,5 +189,223 @@ server.listen(port, () => { // 监听
 })
 ```
 ## 发送HTTP请求
+```js
+const https = require('https')
+const options = {
+  hostname: 'nodejs.cn',
+  port: 443,
+  path: '/todos',
+  method: 'GET'
+}
+
+const req = https.request(options, res => {
+  console.log(`状态码: ${res.statusCode}`)
+
+  res.on('data', d => {
+    process.stdout.write(d)
+  })
+})
+
+req.on('error', error => {
+  console.error(error)
+})
+
+req.end()
+```
+使用axios可以简化很多：
+```js
+const axios = require('axios')
+
+axios
+  .post('http://nodejs.cn/todos', {
+    todo: '做点事情'
+  })
+  .then(res => {
+    console.log(`状态码: ${res.statusCode}`)
+    console.log(res)
+  })
+  .catch(error => {
+    console.error(error)
+  })
+```
+
+## 文件描述符
+```js
+const fs = require('fs')
+
+fs.open('/Users/joe/test.txt', 'r', (err, fd) => {
+  //fd 是文件描述符。
+})
+```
+- `r`  打开文件用于读取。
+- `r+` 打开文件用于读写。
+- `w+` 打开文件用于读写，将流定位到文件的开头。如果文件不存在则创建文件。
+- `a`  打开文件用于写入，将流定位到文件的末尾。如果文件不存在则创建文件。
+- `a+` 打开文件用于读写，将流定位到文件的末尾。如果文件不存在则创建文件。
+`fs.open()`可以同步打开文件。  
+
+## 文件属性
+用Node查看文件的详细信息：
+```js
+const fs = require('fs')
+fs.stat('./server.js', (err, stats) => {
+  if (err) {
+    console.error(err)
+    return
+  }
+  console.log(stats)
+})
+```
+- `stats.isFile()` 是否为文件
+- `stats.isDirectory()` 是否为目录(文件夹)
+- `stats.isSymbolicLink()` 是否为符号链接
+- `stats.size` 获取文件大小
+
+## 文件路径
+```js
+const path = require('path')
+
+const src = '/Users/joe/test.txt'
+path.dirname(src) // '/Users/joe'
+path.basename(src) // 'test.txt'
+path.extname(src) // '.txt'
+
+path.basename(notes, path.extname(src)) //test
+
+path.join(path.dirname(src), 'test.txt') // '/Users/joe/test.txt'
+```
+`path.resolve()` 获得相对路径的绝对路径计算。
+```js
+path.resolve('./test.txt') // 将test.txt附加到当前工作目录上
+path.resolve('tmp', 'test.txt')// 将tmp/test.txt附加到当前工作目录上
+path.resolve('/tmp', 'test.txt')// /tmp/test.txt
+```
+`path.normalize()`  当包含诸如 `.`、`..` 或`双斜杠`之类的相对说明符时，其会尝试计算实际的路径。
+
+## 读取文件
+```js
+const fs = require('fs')
+
+fs.readFile('/Users/joe/test.txt', 'utf8' , (err, data) => {
+  if (err) {
+    console.error(err)
+    return
+  }
+  console.log(data)
+})
+```
+`fs.readFileSync()` 可以同步读取。  
+这两个方法都会将文件的全部内容读取到内存中，大文件最好用流来读取文件的内容。  
+
+## 写入文件
+```js
+const fs = require('fs')
+
+const content = '一些内容'
+
+fs.writeFile('/Users/joe/test.txt', { flag: 'a+' }, content, err => {
+  if (err) {
+    console.error(err)
+    return
+  }
+  //文件写入成功。
+})
+```
+`fs.writeFileSync()` 可以同步写入。`flag`可传入以下几项：
+- `r+` 打开文件用于读写。
+- `w+` 打开文件用于读写，将流定位到文件的开头。如果文件不存在则创建文件。
+- `a`  打开文件用于写入，将流定位到文件的末尾。如果文件不存在则创建文件。
+- `a+` 打开文件用于读写，将流定位到文件的末尾。如果文件不存在则创建文件。
+**将内容追加到文件末尾:**  
+```js
+const content = '一些内容'
+
+fs.appendFile('file.log', content, err => {
+  if (err) {
+    console.error(err)
+    return
+  }
+  //完成！
+})
+```
+`fs.appendFileSync()` 可以异步追加。  
+
+## 使用文件夹
+- `fs.access()` 检查文件夹是否存在以及 Node.js 是否具有访问权限。
+- `fs.mkdir()` 或 `fs.mkdirSync()` 可以创建新的文件夹。
+- `fs.readdir()` 或 `fs.readdirSync()` 可以读取目录的内容（全部的文件和子文件夹）。
+- `fs.rename()` 或 `fs.renameSync()` 可以重命名文件夹。 
+- `fs.rmdir()` 或 `fs.rmdirSync()` 可以删除文件夹。
+
+## 路径模块
+除了之前介绍的，还有下面几个：
+- `path.parse()` 解析对象的路径为组成其的片段。 
+- `path.relative()` 两个参数，基于当前工作目录，返回从第一个路径到第二个路径的相对路径。
+- `path.isAbsolute()` 如果是绝对路径，则返回 true。 
+
+## 操作系统模块
+```js
+const os = require('os')
+```
+
+## 事件模块
+```js
+const EventEmitter = require('events')
+const door = new EventEmitter()
+
+door.on('open', () => {
+  console.log('The door is open')
+}) // door.addListener()效果一样
+
+door.emit('open') // 触发事件
+door.eventNames() // 返回door身上注册事件的数组
+door.getMaxListeners() // 最大监听数量
+door.listenerCount('open') // 获取指定事件监听器的数量
+door.listeners('open') // 返回监听器数组
+door.off('open') // 取消监听 同removeListener()
+door.once('open') // 只监听一次
+door.prependListener('open') // 在监听器数组的开头添加一个监听器
+door.prependOnceListener('open') // 在监听器数组的开头添加一个监听器，只监听一次
+door.removeAllListeners('open') // 删除指定事件的所有监听器
+door.removeListener() // 删除指定事件的指定监听器
+door.setMaxListeners() // 设置最大监听数量
+```
+
+## http 模块
+```js
+const http = require('http')
+http.createServer() // 创建一个服务器，返回http.Server实例
+http.request() // 创建一个请求，返回http.ClientRequest实例
+http.get() // 自动地设置 HTTP 方法为 GET，并自动地调用req.end()。
+```
+**http.Server：**
+```js
+const server = http.createServer() // 返回http.Server实例
+server.listen(port,fn) // 启动 HTTP 服务器并监听连接。
+server.close(fn) // 关闭服务器。
+```
+**http.IncomingMessage和http.ServerResponse：**
+```js
+const server = http.createServer((req, res) => {
+  //req 是一个 http.IncomingMessage 对象。
+  //res 是一个 http.ServerResponse 对象。
+  req.statusCode() // 返回响应状态码
+  req.headers() // 返回响应头
+  req.method() // 返回请求方法
+  req.url() // 返回请求的 URL
+  req.httpVersion() // 返回请求的 HTTP 版本
+
+  res.statusCode = 500
+  res.statusMessage = '内部服务器错误'
+  res.setHeader('headername', value) // 设置 HTTP 消息头的值
+  res.writeHead(statusCode, headers) // 设置 HTTP 响应头和状态码
+  res.end() // 发送响应内容并关闭连接
+})
+```
+
+## Buffer
+它表示在 V8 JavaScript 引擎外部分配的固定大小的内存块。
 
 
+## 流
+在传统的方式中，当告诉程序读取文件时，这会将文件从头到尾读入内存，然后进行处理。使用流，则可以逐个片段地读取并处理（而无需全部保存在内存中）。  
