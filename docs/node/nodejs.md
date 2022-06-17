@@ -205,4 +205,8 @@ Node中通过JavaScript使用内存时就会发现只能使用部分内存（64�
         // 或者
         node --max-new-space-size=1024 test.js // 单位为KB        
 ```
+### 内存泄漏
+把内存当缓存是危险的，最好使用外部缓存，Redis。
+
+
 
