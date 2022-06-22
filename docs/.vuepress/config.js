@@ -42,6 +42,10 @@ module.exports = {
         {
           title: '深入浅出Node.js',
           path: '/node/nodejs'
+        },
+        {
+          title: 'MDN HTML教学',
+          path: '/node/html'
         }
       ],
       '/': ['' /* / */]

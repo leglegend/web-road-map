@@ -1,7 +1,7 @@
-# HTML :triangular_flag_on_post:
-HTML（HyperText Mark-up Language），超文本标记语言。主要掌握其各个标签的用法及标签属性，以及HTML5的新特性。
+# HTML :star:
+HTML（HyperText Markup Language），超文本标记语言。主要掌握其各个标签的用法及标签属性，以及HTML5的新特性。
 ## 资源 :books:
-- [W3CSchool HTML教程](https://www.w3cschool.cn/html/)
+- [MDN HTML教程](https://developer.mozilla.org/zh-CN/docs/Web/HTML)
 - [Pink老师H5+CSS3教程](https://www.bilibili.com/video/BV14J4114768)前端三件套均推荐看Pink老师的入门教程。
 ## 标签
 ### 基本标签
@@ -48,3 +48,7 @@ HTML（HyperText Mark-up Language），超文本标记语言。主要掌握其�
 ## 标签属性
 
 ## HTML5的新特性
+### 多媒体标签
+### Canvas
+### Web Workers
+### 应用缓存
