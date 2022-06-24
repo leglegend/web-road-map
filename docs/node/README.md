@@ -1,6 +1,7 @@
 # 笔记
 这里记录了我在学习前端过程中阅读的书籍及学习资料的笔记，也是对这些资料的推荐。每个章节会标注该资料的出处，希望能帮助到大家
 ## 前端基础
-[《JavaScript高级程序设计(第四版)》](./js-advanced)
-[《深入浅出Node.js》](./nodejs)
-[《MDN HTML教学》](./html)
+[《JavaScript高级程序设计(第四版)》](./js-advanced)  
+[《深入浅出Node.js》](./nodejs)  
+[《MDN HTML教学》](./html)  
+[《Vue.js设计与实现》](./vue3)  

@@ -165,8 +165,9 @@ margin不计入盒子大小，它影响的是盒子的外部空间。
 如果把上述元素的样式稍作修改`box-sizing: border-box;`，那么该元素的盒子实际宽高就是`100px 50px`。所以内容的宽应该减去边框和内边距为`100-20-20-5-5 = 50`。
 ### inline-block
 可以通过`display:inline-block`设置元素，使其同时拥有块级和内联盒子的特性，width和height将会生效，内外边距和边框会推开其他元素，但不会跳转到新行。
-## 文档流
+## 四、文档流
 ### 标准流
+标准流：没有改变默认布局规则情况下的页面元素布局方式。
 ### 浮动流
 ### 定位流
 
@@ -244,6 +245,14 @@ div {
   overflow: visible; /* 可见 */
   overflow: hidden; /* 隐藏 */
   overflow: hidden; /* 滚动 */
+}
+```
+关于换行，有以下几个样式需要注意：
+```css
+div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowarp;
 }
 ```
 ### 列表
