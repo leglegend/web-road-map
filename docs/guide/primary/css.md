@@ -126,32 +126,132 @@ p ~ span { color: red; } /* 与p同级，且在p后的span将被选中 */
 通配符 (*)，组合符 (+, >, ~, ' ')和(:not) 不会影响优先级。  
 **!important**会覆盖上面所有优先级。
 :::
-## 属性
-### 单位
-1. px
-2. em
-3. rem
-4. vw
-5. vh
-### 背景
-### 文本
-### 字体
-### 列表
-### 表格
 
+
+## 三、盒子模型
+### 块级盒子/内联盒子
+区别于HTML的`块状元素`/`内联元素`，虽然两个`block`都是表示元素/盒子会和父容器一样宽，`inline`都是表示元素/盒子不会换行，宽度随内容改变，但是HTML强调的是元素本身，就算我们把`div`的`display`属性改成`inline`，`div`还是一个`块级元素`，但它已经变成了`内联盒子`。  
+块级盒子与内联盒子的区别：
+|                  | 块级盒子                         | 内联盒子                                               |
+| ---------------- | -------------------------------- | ------------------------------------------------------ |
+| width和height    | 默认和父容器一样宽，可以设置宽高 | 取决于内容的宽度，width和height不生效                  |
+| 是否换行         | 每个盒子都将换行                 | 不会换行                                               |
+| 和其他盒子的关系 | 内外边距和边框会将其他盒子推开   | 水平方向的边距和边框会把其他内联盒子推开，垂直方向不会 |
+### 盒子模型的组成
+CSS中组成一个块级盒子需要：  
+- content: 显示内容，大小可以通过设置 `width` 和 `height`
+- padding：内边距，通过 `padding` 设置
+- border：边框，通过 `border` 设置
+- margin：外边距，通过 `margin` 设置
+
+内外边距和边框都可以通过`top\right\bottom\left`分别设置不同方向的边距边框。`margin`可以为负值，会和其他元素重叠。两个外边距相接的元素，其外边距会重叠，实际相隔取决于外边距较大的那个。
+### 两种盒子模型
+假设有如下元素：
+```css
+div {
+  width: 100px;
+  height: 50px;
+  padding: 20px;
+  border: 5px solid black;
+  margin: 10px;
+}
+```
+1. **标准盒子模型**  
+对于标准盒子模型，上述元素的宽度应该是`width+padding+border = 150px`，即内容+内边距+边框。
+::: warning 注意
+margin不计入盒子大小，它影响的是盒子的外部空间。
+:::
+2. **替代盒子模型**  
+如果把上述元素的样式稍作修改`box-sizing: border-box;`，那么该元素的盒子实际宽高就是`100px 50px`。所以内容的宽应该减去边框和内边距为`100-20-20-5-5 = 50`。
+### inline-block
+可以通过`display:inline-block`设置元素，使其同时拥有块级和内联盒子的特性，width和height将会生效，内外边距和边框会推开其他元素，但不会跳转到新行。
 ## 文档流
 ### 标准流
 ### 浮动流
 ### 定位流
 
+## 属性
+### 单位
+除了`px`是`绝对长度单位`，其他均为`相对长度单位`
+| 单位 | 描述                                                                              |
+| ---- | --------------------------------------------------------------------------------- |
+| px   | 像素                                                                              |
+| em   | 在font-size中使用是相对于父元素的字体大小，在其他属性中使用是相对于自身的字体大小 |
+| rem  | 相对于根元素font-size的大小                                                       |
+| lh   | 相对于元素的line-height                                                           |
+| vw   | 视窗宽度的1%                                                                      |
+| vh   | 视窗高度的1%                                                                      |
+| %    | 相对于父元素的属性百分比                                                          |
+### 背景
+`background`属性是一个简写，它能够包含很多的普通属性，先来看下面这个超级复杂的背景：
+```css
+.box {
+  background: linear-gradient(105deg, rgba(255,255,255,.2) 39%, rgba(51,56,57,1) 96%) center center / 400px 200px no-repeat,url(big-star.png) center no-repeat, rebeccapurple;
+}
+```
+一个个介绍花费篇幅太大，不符合我们这篇文章的定位，一下介绍几个常用的例子：
+```css
+/* 背景颜色 */
+.box {
+  background: red;
+  background-color: #ffffff;
+  background-color: rgba(255,255,255,.2);
+}
 
-## 内联元素/块状元素
+/* 背景图片 */
+.box {
+  background-image: url(balloons.jpg);
+  background-repeat: no-repeat; /* repeat、repeat-x、repeat-y */
+  background-size: 100px 10%; /* 保持宽高比，cover拉伸，contain填充*/
+  background-position: 10px 10px; /* 雪碧图专项 */
+}
 
-## 盒子模型
-### content
-### padding
-### border
-### margin
+/* 背景渐变 */
+.box {
+  background-image: linear-gradient(90deg,#ffffff,#000000);
+  background-image: linear-gradient(circle,rgba(0,249,255,1) 39%, rgba(51,56,57,1) 96%);
+}
+```
+### 文字
+#### 字体
+```css
+p {
+  color:red; /* 颜色 */
+  font-family: "Trebuchet MS", Verdana, sans-serif; /* 字体 */
+  font-size: 1em; /* 字体大小 */
+  font-style: italic; /* 斜体  normal正常*/
+  font-weight: bold; /* 粗体 */
+  text-transform: none; /* 字体转换 uppercase大写 lowercase小写 capitalize首字母大写  full-width全角 */
+  text-decoration: none; /* underline下划线 overline上划线 line-through删除线 */
+  text-shadow: 4px 4px 5px red; /* 文字阴影 */
+}
+```
+::: tip font简写
+font可按照以下顺序简写：font-style, font-variant, font-weight, font-stretch, font-size, line-height, and font-family
+:::
+#### 布局
+```css
+p {
+  text-align: left; /* 对齐方式  */
+  line-height: 1; /* 行高  */
+  letter-spacing: 2px;  /* 字与字之间的距离  */
+  word-spacing: 4px; /* 字母与字母之间的距离  */
+}
+```
+这里再说下溢出的问题，溢出的文本和块会超过父元素边界显示在父元素的外面，我们可以通过overflow属性解决这个问题：
+```css
+div {
+  overflow: visible; /* 可见 */
+  overflow: hidden; /* 隐藏 */
+  overflow: hidden; /* 滚动 */
+}
+```
+### 列表
+### 表格
+
+
+
+
 
 ## 浮动
 ### 设置浮动float
