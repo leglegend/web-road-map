@@ -53,6 +53,5 @@ module.exports = {
     sidebarDepth: 3,
     smoothScroll: true
   },
-  base: '/web-road-map/',
-  dest: './web'
+  base: '/web-road-map/'
 }
