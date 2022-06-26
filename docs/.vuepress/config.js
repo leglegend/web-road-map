@@ -46,6 +46,10 @@ module.exports = {
         {
           title: 'MDN HTML教学',
           path: '/node/html'
+        },
+        {
+          title: 'Vue.js设计与实现',
+          path: '/node/vue3'
         }
       ],
       '/': ['' /* / */]
