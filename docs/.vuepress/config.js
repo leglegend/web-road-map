@@ -26,6 +26,14 @@ module.exports = {
             '/guide/primary/css',
             '/guide/primary/js'
           ]
+        },
+        {
+          title: '前端工程化',
+          path: '/guide/project/',
+          collapsable: false,
+          children: [
+            '/guide/project/vue'
+          ]
         }
       ],
       '/node/': [
