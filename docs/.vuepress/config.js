@@ -26,6 +26,14 @@ module.exports = {
             '/guide/primary/css',
             '/guide/primary/js'
           ]
+        },
+        {
+          title: '前端工程化',
+          path: '/guide/project/',
+          collapsable: false,
+          children: [
+            '/guide/project/vue'
+          ]
         }
       ],
       '/node/': [
@@ -46,6 +54,10 @@ module.exports = {
         {
           title: 'MDN HTML教学',
           path: '/node/html'
+        },
+        {
+          title: 'Vue.js设计与实现',
+          path: '/node/vue3'
         }
       ],
       '/': ['' /* / */]

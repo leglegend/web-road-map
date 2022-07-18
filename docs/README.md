@@ -5,11 +5,11 @@ tagline: 持续学习，不断学习
 actionText: 立即开始 →
 actionLink: /guide/
 features:
-- title: 简洁至上
-  details: 以 Markdown 为中心的项目结构，以最少的配置帮助你专注于写作。
-- title: Vue驱动
-  details: 享受 Vue + webpack 的开发体验，在 Markdown 中使用 Vue 组件，同时可以使用 Vue 来开发自定义主题。
-- title: 高性能
-  details: VuePress 为每个页面预渲染生成静态的 HTML，同时在页面被加载的时候，将作为 SPA 运行。
-footer: MIT Licensed | Copyright © 2012-present 传说中的腿腿
+- title: 循序渐进
+  details: 由浅入深，从基本到原理，从初级到高级
+- title: 结构清晰
+  details: 分门别类，合理的知识结构以及清晰的知识点
+- title: 资源推荐
+  details: 不再需要满世界找资料，每个阶段都会推荐整理好的资源，把时间用在刀刃上
+footer: MIT Licensed | Copyright © 2022-present 传说中的腿腿
 ---
