@@ -3,14 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "homepage": "http://leglegend.http://github.io/web-road-map",
   "scripts": {
     "dev": "vuepress dev docs",
     "build": "vuepress build docs",
-    "deploy": "bash deploy.sh"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d docs/.vuepress/dist"
   },
   "author": "nite",
   "license": "ISC",
   "devDependencies": {
+    "gh-pages": "^4.0.0",
     "vuepress": "^1.9.7"
   }
 }
