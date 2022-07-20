@@ -31,9 +31,7 @@ module.exports = {
           title: '前端工程化',
           path: '/guide/project/',
           collapsable: false,
-          children: [
-            '/guide/project/vue'
-          ]
+          children: ['/guide/project/vue', '/guide/project/git']
         }
       ],
       '/node/': [
