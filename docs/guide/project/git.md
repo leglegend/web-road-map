@@ -1,5 +1,6 @@
 # Git :star:
 ## 工作流程
+![工作流程图](./images/2022-07-21-17-21-14.png)
 ```mermaid
 graph LR
 远程仓库-->|clone/fetch|本地仓库
