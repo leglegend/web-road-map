@@ -66,6 +66,8 @@ git commit -am "message"
 git fetch [远程仓库名] [分支名]
 // 获取所有分支
 git fetch --all
+// 清除远程分支的本地缓存
+git fetch -p origin
 ```
 ### pull
 `git pull`命令可以从远程仓库获取代码并合并到本地
