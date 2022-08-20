@@ -188,4 +188,52 @@ HTTP报文是由多行(CR+LF换行)数据构成的字符串文本
 建立起一条与其他服务器的通信线路，再使用SSL等加密手段进行通信
 
 ### 保存资源的缓存
-缓存之代理服务器或客户端本地磁盘保存资源副本
+缓存之代理服务器或客户端本地磁盘保存资源副本  
+缓存有效期  
+缓存过期后，相源服务器确认缓存是否失效，断定失效则再次请求新资源  
+
+### HTTP之前的协议
+FTP(File Transfer Protocol) 文件传输协议  
+NNTP Archie WAIS Gopher
+
+## 第6章 HTTP首部
+### HTTP报文首部
+报文首部：客户端及服务端处理时的重要信息  
+报文主体：需要的资源  
+
+### HTTP首部字段
+结构： 首部字段名：字段值  
+例子：Content-Type:text/html  
+字段值可有多个值，逗号隔开
+
+首部字段类型：
+1. 通用首部字段：请求和响应都会使用的首部
+2. 请求首部字段
+3. 响应首部字段
+4. 实体首部字段：资源内容等与实体相关的首部
+
+### HTTP/1.1 通用首部字段
+Cache-Control：操作缓存工作机制  
+Connection：控制不再转发给代理的首部字段、管理持久连接。Keep-Alive：保持连接 close：断开持久连接 1.1默认都是持久连接 1.0相反
+Date：创建HTTP报文的日期和时间
+Trailer：事先说明报文主体后记录了哪些首部字段  
+Transfer-Encoding：传输报文主体时采用的编码方式，1.1仅对分块有效(chunked)  
+Upgrade：用以检测HTTP协议或其他协议是否可使用更高的版本进行通信  
+Via：用于追踪报文的转发  
+Warning：警告
+
+### 请求首部字段
+Accept：可通知服务器能够处理的媒体类型，type/subType格式  text/html;q=1 q表示权重
+Accept-Charset：通知服务器支持的字符集  
+Accept-Encoding：告知服务器支持的内容编码 gzip compress deflate identity  
+Accept-Language：支持的语言  
+Authorization：告知服务器认证信息  
+Expect：告知服务器期望出现的某种特定行为  
+From：告知服务器用户的电子邮箱  
+Host：请求资源所处的互联网主机名和端口号  
+If-Match：条件请求，服务端判断条件为真才会执行请求  
+If-Modified-Since：指定日期后发生更新，服务器接收请求  
+If-None-Match：与ETag不一致时才处理请求，与If-Match相反  
+Max-Forwards：最大转发次数  
+Range：获取部分资源的范围请求 bytes=5001-10000  
+Referer：告知服务器请求的原始资源URI
