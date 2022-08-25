@@ -58,8 +58,8 @@ module.exports = {
           path: '/node/vue3'
         },
         {
-          title: 'Vue.js设计与实现',
-          path: '/node/vue3'
+          title: '图解HTTP',
+          path: '/node/http'
         }
       ],
       '/': ['' /* / */]
