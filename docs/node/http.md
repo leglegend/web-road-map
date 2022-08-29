@@ -236,4 +236,36 @@ If-Modified-Since：指定日期后发生更新，服务器接收请求
 If-None-Match：与ETag不一致时才处理请求，与If-Match相反  
 Max-Forwards：最大转发次数  
 Range：获取部分资源的范围请求 bytes=5001-10000  
-Referer：告知服务器请求的原始资源URI
+Referer：告知服务器请求的原始资源URI  
+User-Agent：浏览器信息
+
+### 响应首部字段
+Accept-Ranges：告知客户端请求范围  
+Location：将响应接收方引导至另一个URI  
+Server：服务器安装的HTTP应用服务的信息  
+
+### 实体首部字段
+Allow：允许的HTTP方法  
+Content-Encoding：告知客户端主题的内容编码方式 例如gzip  
+Content-Language：实体主体使用的语言  
+Conent-Length：主体部分大小  
+Content-Location：主体返回资源的对应URI  
+Content-MD5：MD5算法值，可判断返回信息是否完整  
+Content-Range：返回的范围  
+Content-Type：实体内容的媒体类型 
+
+### 为Cookie服务的首部字段
+Set-Cookie：响应首部字段，告诉客户端Cookie
+Cookie：请求首部字段，告诉服务器自己的Cookie  
+
+Set-Cookie：name=value 方式  
+其中包含：
+expires=DATE  Cookie的有效期   
+path 适用文件目录  
+domain 适用域名  
+Secure 仅在https下才会发送Cookie  
+HttpOnly 不能被JS脚本访问
+
+## 第7章 确保Web安全的HTTPS
+### HTTP的缺点
+
