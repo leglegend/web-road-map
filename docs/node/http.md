@@ -267,5 +267,6 @@ Secure 仅在https下才会发送Cookie
 HttpOnly 不能被JS脚本访问
 
 ## 第7章 确保Web安全的HTTPS
-### HTTP的缺点
+### HTTP的缺点1
+HTTPS
 
