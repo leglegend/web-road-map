@@ -7,6 +7,7 @@ module.exports = {
       { text: '首页', link: '/' },
       { text: '导航', link: '/guide/' },
       { text: '笔记', link: '/node/' },
+      { text: '面试', link: '/interview/' },
       { text: 'GitHub', link: 'https://github.com/leglegend/web-road-map' }
     ],
     sidebar: {
@@ -60,6 +61,26 @@ module.exports = {
         {
           title: '图解HTTP',
           path: '/node/http'
+        }
+      ],
+      '/interview/': [
+        {
+          title: '面试',
+          path: '/interview/',
+          sidebarDepth: 0,
+          collapsable: false
+        },
+        {
+          title: 'Vue',
+          path: '/interview/vue'
+        },
+        {
+          title: 'JavaScript',
+          path: '/interview/js'
+        },
+        {
+          title: 'HTML&CSS',
+          path: '/interview/css'
         }
       ],
       '/': ['' /* / */]
