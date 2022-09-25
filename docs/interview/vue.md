@@ -30,4 +30,4 @@ mounted
 beforeUpdate
 updated
 beforeDestroy/beforeUnmount
-destroyed/unmounted
+destroyed/unmounted 
