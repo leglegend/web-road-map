@@ -20,7 +20,7 @@ vuex或者pinia
 
 ## v-if和v-for哪个优先级更高
 在Vue2中，v-for具有更高的优先级，但在Vue3中，v-if的优先级更高，所以不能在v-if中使用v-for的参数。  
-v-if在render函数中就是一个三元表达式，为true则渲染该节点
+v-if在render函数中就是一个三元表达式，为true则渲染该节点 
 
 ## 简述Vue的生命周期以及每个阶段做的事情
 beforeCreate
