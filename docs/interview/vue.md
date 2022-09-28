@@ -108,7 +108,7 @@ const __sfc__ = {
 
 > 注：无论在Vue2和Vue3中，都不推荐将v-if和v-for同时使用。
 
-## 简述Vue的生命周期以及每个阶段做的事情
+### 1.3 Vue里有哪些生命周期？分别做了什么事情？
 beforeCreate
 created
 beforeMount
