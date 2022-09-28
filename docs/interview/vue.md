@@ -109,11 +109,40 @@ const __sfc__ = {
 > 注：无论在Vue2和Vue3中，都不推荐将v-if和v-for同时使用。
 
 ### 1.3 Vue里有哪些生命周期？分别做了什么事情？
-beforeCreate
-created
-beforeMount
-mounted
-beforeUpdate
-updated
-beforeDestroy/beforeUnmount
-destroyed/unmounted 
+| Vue2          | Vue3          | setup           |
+| ------------- | ------------- | --------------- |
+| beforeCreate  | beforeCreate  | x               |
+| created       | created       | x               |
+| beforeMount   | beforeMount   | onBeforeMount   |
+| mounted       | mounted       | onMounted       |
+| beforeUpdate  | beforeUpdate  | onBeforeUpdate  |
+| updated       | updated       | onUpdated       |
+| beforeDestroy | beforeUnmount | onBeforeUnmount |
+| destroyed     | unmounted     | onUnmounted     |
+
+setup在beforeCreate之前运行，故没有beforeCreate和created这两个钩子函数。
+
+我们可以把Vue的生命周期分为`创建`、`挂载`、`更新`和`卸载`四个阶段，每个阶段会在开始和结束时分别调用beforeXxxx和xxxxed声明周期钩子函数。  
+
+另外还有`初始化`、`编译`阶段，但是没有与之对应的钩子函数。  
+
+我们按照实例化一个Vue对象的顺序给出每个阶段做了哪些工作：  
+
+*1、初始化阶段*  
+从`new Vue()`到`beforeCreate`之间的阶段，主要在Vue实例上初始化一些属性(`$root、$parent、$children、$refs等等`)、初始化事件(实例上有个_events属性用来存放注册在该实例的事件函数)以及初始化渲染函数(每个实例都有_c函数，就是createElement)  
+
+*2、创建阶段*  
+`beforeCreate`到`created`之间，该阶段主要是在Vue实例上添加我们在组件中定义的injects、props、methods、data、computed、watch、provide(真的是按照上面给出的顺序)，当然还包括将数据变为响应式。  
+所以在`created`钩子函数中，我们能够访问到option中的所有内容，但还不能访问到DOM。这时修改data中的数据，在挂载完成后是能够反映到界面上的，因为挂载时用到的数据已经就是被修改后的数据了。  
+
+*3、编译阶段*  
+只有完整版的Vue才会有的阶段，在`created`和`beforeMount`之间，将模板中的代码转换为render函数。  
+
+*4、挂载阶段*  
+`beforeMount`和`mounted`之间的阶段，运行render函数，将虚拟DOM渲染到界面上。在`mounted`中，已经可以访问到真实DOM了。  
+
+*5、更新阶段*  
+挂载完成后数据发生变化，会进入更新阶段，这里的更新指的是更新界面。在`beforeMount`中，数据已经发生变化，但还没有将最新的数据渲染到界面上，之后会进行`patch`更新真实DOM。`mounted`中已经可以访问到最新的DOM了。 
+
+*6、卸载阶段*  
+主动调用`$destroy`或组件在父组件被卸载/隐藏，会立即触发`beforeDestroy`，可以在`beforeDestroy`进行清除计时器等操作，此时Vue实例还未被销毁。当`destroyed`被触发时，就无法访问到Vue实例了。
