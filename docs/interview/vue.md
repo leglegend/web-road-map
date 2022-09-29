@@ -146,3 +146,42 @@ setup在beforeCreate之前运行，故没有beforeCreate和created这两个钩�
 
 *6、卸载阶段*  
 主动调用`$destroy`或组件在父组件被卸载/隐藏，会立即触发`beforeDestroy`，可以在`beforeDestroy`进行清除计时器等操作，此时Vue实例还未被销毁。当`destroyed`被触发时，就无法访问到Vue实例了。
+
+
+### 1.14 Vue双向绑定的实现原理
+Vue的双向绑定其实是一个语法糖，`v-model`相当于`:value`和`@input`的组合。  
+
+应用在不同组件上的`v-model`会自动对应相应的`v-on`事件，例如`input`组件会绑定为`@input`，而`checkbox`、`select`会绑定为`@change`。  
+
+`v-model`还可以应用在组件上，因为Vue不推荐子组件直接更改父组件的props，通过在组件上绑定`v-model`，可以直接通过emit修改对应的值，而不需要在父组件做任何处理，非常方便。可以看下官网的例子：
+```js
+Vue.component('base-checkbox', {
+  model: {
+    prop: 'checked',
+    event: 'change'
+  },
+  props: {
+    checked: Boolean
+  },
+  template: `
+      <input
+        type="checkbox"
+        v-bind:checked="checked"
+        v-on:change="$emit('change', $event.target.checked)"
+      >
+    `
+})
+```
+`model`中的数据即是子组件中对应`v-model`的值和事件。  
+
+这里还要提一嘴`.sync`修饰符：
+```html
+<text-document :title.sync="title"></text-document>
+```
+使用了`.sync`修饰符的props，只要在子组件中通过以下方式调用，就可以修改父组件中绑定的值：
+```js
+$emit('update:title', 123)
+```
+
+Vue3中取消了`.sync`修饰符，但是可以给`v-model`添加参数，上面的例子只需要通过`v-model:title`进行绑定，就能够实现同样的效果。  
+> 在Vue3中，组件上的`v-model`如果没有任何参数，那他默认为`modelValue`，修改值时需要使用`$emit('update:modelValue', 123)`
