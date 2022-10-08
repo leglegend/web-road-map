@@ -152,7 +152,7 @@ HTTP报文是由多行(CR+LF换行)数据构成的字符串文本
 302 Found 临时性重定向
 303 See Other 请求资源存在另一个URI，使用GET方法定向获取资源  
 304 Not Modified 资源已找到，但未改变，客户端可直接使用缓存，与重定向无关  
-307 Temporaty Redirect 临时重定向
+307 Temporaty Redirect 临时重定向，请求方法不可变
 
 ### 4xx客户端错误
 400 Bad Request 请求报文中存在语法错误
