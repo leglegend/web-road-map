@@ -110,6 +110,7 @@ let foo = ()=>{}
 ## 面试重点 :warning:
 ### 手写Promise
 ### 防抖和节流
+debounce throttle
 ### 手写apply、call、bind
 ```js
 // 手写call
