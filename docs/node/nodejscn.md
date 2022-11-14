@@ -107,6 +107,9 @@ exports.foo = {
 `npm view <package-name> version` 线上最新版本，加s获取所有版本。
 `npm install <package-name>@<version>` 安装某个包的指定版本。
 `npm uninstall <package-name>` 卸载指定包。
+`npm config get registry` 查看当前镜像使用的地址。
+`npm config set registry https://registry.npm.taobao.org` 设置当前镜像地址为淘宝。
+`npm config set registry https://registry.npmjs.org` 设置当前镜像地址为官方。
 
 ## package.json
 - version 表明了当前的版本。
